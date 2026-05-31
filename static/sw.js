@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'sholatku-v3';
+const CACHE_VERSION = 'sholatku-v4';
 const CACHE_STATIC = `${CACHE_VERSION}-static`;
 const CACHE_DYNAMIC = `${CACHE_VERSION}-dynamic`;
 const CACHE_API = `${CACHE_VERSION}-api`;
@@ -10,14 +10,6 @@ const APP_SHELL = [
     '/manifest.json',
     '/static/icon-192.png',
     '/static/icon-512.png',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap',
-];
-
-// API endpoints to cache
-const API_ROUTES = [
-    '/api/mosques',
-    '/api/events',
-    '/api/osm-mosques',
 ];
 
 // Max cache items
@@ -27,7 +19,7 @@ const MAX_API_ITEMS = 30;
 
 // ─── INSTALL ──────────────────────────────────────────────────
 self.addEventListener('install', event => {
-    console.log('[SW] Installing...');
+    console.log('[SW] Installing v4...');
     event.waitUntil(
         caches.open(CACHE_STATIC)
             .then(cache => {
@@ -40,7 +32,7 @@ self.addEventListener('install', event => {
 
 // ─── ACTIVATE ─────────────────────────────────────────────────
 self.addEventListener('activate', event => {
-    console.log('[SW] Activating...');
+    console.log('[SW] Activating v4...');
     event.waitUntil(
         caches.keys()
             .then(keys => {
@@ -98,9 +90,9 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Strategy 6: HTML pages — Network First
+    // Strategy 6: HTML pages — Network First (cache the main page)
     if (isHTML(request)) {
-        event.respondWith(networkFirst(request, CACHE_DYNAMIC));
+        event.respondWith(networkFirstWithCache(request, CACHE_DYNAMIC));
         return;
     }
 
@@ -159,6 +151,25 @@ async function networkFirst(request, cacheName) {
     }
 }
 
+// Network First with Cache — for HTML pages (always cache the response)
+async function networkFirstWithCache(request, cacheName) {
+    try {
+        const response = await fetch(request);
+        if (response && response.status === 200) {
+            const cache = await caches.open(cacheName);
+            cache.put(request, response.clone());
+        }
+        return response;
+    } catch (error) {
+        const cached = await caches.match(request);
+        if (cached) {
+            return cached;
+        }
+        // Return the main page as fallback
+        return caches.match('/');
+    }
+}
+
 // Stale While Revalidate — for CDN resources
 async function staleWhileRevalidate(request, cacheName) {
     const cache = await caches.open(cacheName);
@@ -184,8 +195,7 @@ function isAppShell(url) {
 }
 
 function isApiRoute(url) {
-    return API_ROUTES.some(route => url.pathname.startsWith(route)) ||
-           url.pathname.startsWith('/api/');
+    return url.pathname.startsWith('/api/');
 }
 
 function isImage(request) {
@@ -325,4 +335,4 @@ async function updatePrayerTimes() {
     }
 }
 
-console.log('[SW] Service Worker loaded');
+console.log('[SW] Service Worker v4 loaded');
