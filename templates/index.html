@@ -148,6 +148,18 @@
         .adhan-popup .adhan-icon{font-size:64px;margin-bottom:12px}
         .adhan-popup .adhan-title{font-size:24px;font-weight:700;margin-bottom:4px}
         .adhan-popup .adhan-sub{color:var(--txt-d);margin-bottom:16px}
+
+        /* Guide Cards */
+        .guide-card{background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;gap:14px}
+        .guide-num{width:36px;height:36px;background:var(--acc);color:#000;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0}
+        .guide-title{font-weight:700;font-size:15px;color:var(--txt);margin-bottom:6px}
+        .guide-arab{font-size:18px;color:var(--acc);line-height:1.8;margin:8px 0;text-align:center}
+        .guide-latin{font-size:12px;color:var(--txt-d);font-style:italic;text-align:center}
+        .guide-meaning{font-size:13px;color:var(--txt-d);text-align:center;margin-top:6px}
+        .guide-desc{font-size:13px;color:var(--txt-d);line-height:1.5}
+        .guide-note{font-size:12px;color:var(--gold);margin-top:6px;font-style:italic}
+        .tabs .tab{cursor:pointer}
+        .subtab-content{animation:fadeIn .3s}
     </style>
 </head>
 <body>
@@ -240,6 +252,381 @@
         </div>
     </div>
 
+    <!-- PRAYER GUIDE TAB -->
+    <div id="tabGuide" class="tc">
+        <div class="sec-t">📖 Panduan Shalat</div>
+        
+        <!-- Sub-tabs -->
+        <div class="tabs" style="padding:0 16px">
+            <div class="tab active" data-subtab="guideWudu">🧼 Wudu</div>
+            <div class="tab" data-subtab="guideShalat">🕌 Shalat</div>
+            <div class="tab" data-subtab="guideExtra">⭐ Tambahan</div>
+        </div>
+
+        <!-- Wudu Guide -->
+        <div id="guideWudu" class="subtab-content" style="padding:16px">
+            <div style="background:var(--acc-d);border:1px solid var(--acc);border-radius:16px;padding:20px;margin-bottom:16px">
+                <div style="font-weight:700;font-size:16px;color:var(--acc);margin-bottom:8px">🧼 Tata Cara Wudu</div>
+                <div style="font-size:13px;color:var(--txt-d)">Bersuci sebelum shalat — 7 rukun wudu yang wajib</div>
+            </div>
+
+            <!-- Niat Wudu -->
+            <div class="guide-card">
+                <div class="guide-num">0</div>
+                <div>
+                    <div class="guide-title">Niat Wudu</div>
+                    <div class="guide-arab">نَوَيْتُ الْوُضُوْءَ لِرَفْعِ الْحَدَثِ اْلاَصْغَرِ فَرْضًا لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Nawaitul wudhuu'a li rafil hadatsil ashghari fardhan lillaahi ta'aalaa"</div>
+                    <div class="guide-meaning">Aku berniat wudu untuk menghilangkan hadats kecil, fardhu karena Allah Ta'ala</div>
+                </div>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="guide-card">
+                <div class="guide-num">1</div>
+                <div>
+                    <div class="guide-title">Membasuh Kedua Telapak Tangan</div>
+                    <div class="guide-desc">Basuh kedua telapak tangan hingga pergelangan, 3 kali</div>
+                    <div class="guide-note">Pastikan air mengenai seluruh permukaan tangan hingga sela-sela jari</div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="guide-card">
+                <div class="guide-num">2</div>
+                <div>
+                    <div class="guide-title">Berkumur (Madhmadhah)</div>
+                    <div class="guide-desc">Masukkan air ke mulut, kumur-kumur, lalu keluarkan, 3 kali</div>
+                    <div class="guide-note">Disunnahkan membasahi seluruh rongga mulut</div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="guide-card">
+                <div class="guide-num">3</div>
+                <div>
+                    <div class="guide-title">Memasukkan Air ke Hidung (Istinasyaaq)</div>
+                    <div class="guide-desc">Hisap air ke hidung lalu keluarkan, 3 kali</div>
+                    <div class="guide-note">Tangan kiri untuk mengeluarkan air, tangan kanan untuk mengambil air</div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="guide-card">
+                <div class="guide-num">4</div>
+                <div>
+                    <div class="guide-title">Membasuh Muka</div>
+                    <div class="guide-desc">Basuh seluruh muka dari dahi hingga dagu, dari telinga ke telinga, 3 kali</div>
+                    <div class="guide-note">Termasuk area dalam batas rambut dan alis</div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="guide-card">
+                <div class="guide-num">5</div>
+                <div>
+                    <div class="guide-title">Membasuh Tangan hingga Siku</div>
+                    <div class="guide-desc">Basuh tangan kanan lalu kiri, dari ujung jari hingga siku, 3 kali</div>
+                    <div class="guide-note">Pastikan air mengenai siku dan sela-sela jari</div>
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="guide-card">
+                <div class="guide-num">6</div>
+                <div>
+                    <div class="guide-title">Mengusap Kepala (Mash)</div>
+                    <div class="guide-desc">Basuh tangan, usap dari depan kepala hingga tengkuk, lalu kembali ke depan, 1 kali</div>
+                    <div class="guide-note">Cukup 1 kali usapan, bukan 3 kali</div>
+                </div>
+            </div>
+
+            <!-- Step 7 -->
+            <div class="guide-card">
+                <div class="guide-num">7</div>
+                <div>
+                    <div class="guide-title">Membasuh Kaki hingga Mata Kaki</div>
+                    <div class="guide-desc">Basuh kaki kanan lalu kiri, dari ujung jari hingga mata kaki, 3 kali</div>
+                    <div class="guide-note">Gosok sela-sela jari dan area mata kaki</div>
+                </div>
+            </div>
+
+            <!-- Sunnah -->
+            <div style="background:var(--gold-d);border:1px solid var(--gold);border-radius:16px;padding:16px;margin-top:16px">
+                <div style="font-weight:700;color:var(--gold);margin-bottom:8px">⭐ Sunnah Wudu</div>
+                <div style="font-size:13px;color:var(--txt-d);line-height:1.8">
+                    • Membaca Bismillah sebelum wudu<br>
+                    • Mendahulukan anggota kanan<br>
+                    • Mengusap kedua telinga<br>
+                    • Berdoa setelah wudu
+                </div>
+            </div>
+
+            <!-- Doa Setelah Wudu -->
+            <div style="background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:20px;margin-top:16px">
+                <div style="font-weight:700;color:var(--txt);margin-bottom:12px">🤲 Doa Setelah Wudu</div>
+                <div style="font-size:20px;color:var(--acc);text-align:center;line-height:2;margin-bottom:12px">
+                    أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ
+                </div>
+                <div style="font-size:13px;color:var(--txt-d);text-align:center;font-style:italic">
+                    "Asyhadu an laa ilaaha illallaahu wa asyhadu anna muhammadan 'abduhuu wa rasuuluh"
+                </div>
+                <div style="font-size:13px;color:var(--txt-d);text-align:center;margin-top:8px">
+                    Aku bersaksi bahwa tiada Tuhan selain Allah dan Muhammad adalah hamba dan utusan-Nya
+                </div>
+            </div>
+        </div>
+
+        <!-- Shalat Guide -->
+        <div id="guideShalat" class="subtab-content" style="display:none;padding:16px">
+            <div style="background:var(--acc-d);border:1px solid var(--acc);border-radius:16px;padding:20px;margin-bottom:16px">
+                <div style="font-weight:700;font-size:16px;color:var(--acc);margin-bottom:8px">🕌 Panduan Shalat Lengkap</div>
+                <div style="font-size:13px;color:var(--txt-d)">Niat dan tata cara shalat 5 waktu</div>
+            </div>
+
+            <!-- Shalat Subuh -->
+            <div class="guide-card" style="border-right:3px solid var(--gold)">
+                <div class="guide-num" style="background:var(--gold);color:#000">🌅</div>
+                <div>
+                    <div class="guide-title">Shalat Subuh — 2 Rakaat</div>
+                    <div class="guide-arab">أُصَلِّي فَرْضَ الصُّبْحِ رَكْعَتَيْنِ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii fardhash shubhi rak'ataini mustaqbilal qiblati adaa'an lillaahi ta'aalaa"</div>
+                    <div class="guide-meaning">Aku niat shalat fardhu Subuh 2 rakaat menghadap kiblat, karena Allah Ta'ala</div>
+                </div>
+            </div>
+
+            <!-- Shalat Dzuhur -->
+            <div class="guide-card" style="border-right:3px solid var(--acc)">
+                <div class="guide-num">☀️</div>
+                <div>
+                    <div class="guide-title">Shalat Dzuhur — 4 Rakaat</div>
+                    <div class="guide-arab">أُصَلِّي فَرْضَ الظُّهْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii fardhadl zhuhri arba'a raka'aatin mustaqbilal qiblati adaa'an lillaahi ta'aalaa"</div>
+                    <div class="guide-meaning">Aku niat shalat fardhu Dzuhur 4 rakaat menghadap kiblat, karena Allah Ta'ala</div>
+                </div>
+            </div>
+
+            <!-- Shalat Ashar -->
+            <div class="guide-card" style="border-right:3px solid #f59e0b">
+                <div class="guide-num" style="background:#f59e0b;color:#000">🌤️</div>
+                <div>
+                    <div class="guide-title">Shalat Ashar — 4 Rakaat</div>
+                    <div class="guide-arab">أُصَلِّي فَرْضَ الْعَصْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii fardhal 'ashri arba'a raka'aatin mustaqbilal qiblati adaa'an lillaahi ta'aalaa"</div>
+                    <div class="guide-meaning">Aku niat shalat fardhu Ashar 4 rakaat menghadap kiblat, karena Allah Ta'ala</div>
+                </div>
+            </div>
+
+            <!-- Shalat Maghrib -->
+            <div class="guide-card" style="border-right:3px solid #ef4444">
+                <div class="guide-num" style="background:#ef4444;color:#fff">🌇</div>
+                <div>
+                    <div class="guide-title">Shalat Maghrib — 3 Rakaat</div>
+                    <div class="guide-arab">أُصَلِّي فَرْضَ الْمَغْرِبِ ثَلَاثَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii fardhal maghribi tsalaatsa raka'aatin mustaqbilal qiblati adaa'an lillaahi ta'aalaa"</div>
+                    <div class="guide-meaning">Aku niat shalat fardhu Maghrib 3 rakaat menghadap kiblat, karena Allah Ta'ala</div>
+                </div>
+            </div>
+
+            <!-- Shalat Isya -->
+            <div class="guide-card" style="border-right:3px solid #6366f1">
+                <div class="guide-num" style="background:#6366f1;color:#fff">🌙</div>
+                <div>
+                    <div class="guide-title">Shalat Isya — 4 Rakaat</div>
+                    <div class="guide-arab">أُصَلِّي فَرْضَ الْعِشَاءِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii fardhal 'isyaa'i arba'a raka'aatin mustaqbilal qiblati adaa'an lillaahi ta'aalaa"</div>
+                    <div class="guide-meaning">Aku niat shalat fardhu Isya 4 rakaat menghadap kiblat, karena Allah Ta'ala</div>
+                </div>
+            </div>
+
+            <!-- Rukun Shalat -->
+            <div style="background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:20px;margin-top:16px">
+                <div style="font-weight:700;color:var(--txt);margin-bottom:12px">📋 Rukun Shalat (13 Rukun)</div>
+                <div style="font-size:13px;color:var(--txt-d);line-height:2">
+                    1. Berdiri bagi yang mampu<br>
+                    2. Takbiratul Ihram<br>
+                    3. Membaca Al-Fatihah<br>
+                    4. Rukuk<br>
+                    5. I'tidal<br>
+                    6. Sujud (2x)<br>
+                    7. Duduk di antara dua sujud<br>
+                    8. Duduk Tasyahhud Akhir<br>
+                    9. Membaca Tasyahhud<br>
+                    10. Shalawat atas Nabi<br>
+                    11. Salam<br>
+                    12. Tertib<br>
+                    13. Niat
+                </div>
+            </div>
+
+            <!-- Gerakan Shalat -->
+            <div style="background:var(--acc-d);border:1px solid var(--acc);border-radius:16px;padding:20px;margin-top:16px">
+                <div style="font-weight:700;color:var(--acc);margin-bottom:12px">🕌 Gerakan Shalat</div>
+                
+                <!-- Takbiratul Ihram -->
+                <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px">
+                    <div style="font-weight:600;color:var(--txt);margin-bottom:6px">🕋 Takbiratul Ihram</div>
+                    <div style="font-size:20px;color:var(--acc);text-align:center;margin:8px 0">اللهُ أَكْبَرُ</div>
+                    <div style="font-size:12px;color:var(--txt-d);text-align:center">"Allaahu Akbar" — Allah Maha Besar</div>
+                    <div style="font-size:12px;color:var(--txt-d);margin-top:6px">Angkat kedua tangan sejajar telinga, lalu lipat di dada</div>
+                </div>
+
+                <!-- Rukuk -->
+                <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px">
+                    <div style="font-weight:600;color:var(--txt);margin-bottom:6px">🙇 Rukuk</div>
+                    <div style="font-size:18px;color:var(--acc);text-align:center;margin:8px 0;line-height:1.8">
+                        سُبْحَانَكَ اللَّهُمَّ رَبَّنَا وَبِحَمْدِكَ<br>
+                        اَللَّهُمَّ اغْفِرْ لِي
+                    </div>
+                    <div style="font-size:12px;color:var(--txt-d);text-align:center">"Subhaanaka Allaahumma Rabbanaa wa bihamdik, Allaahummaghfirlii"</div>
+                    <div style="font-size:12px;color:var(--txt-d);margin-top:6px">Membungkuk 90°, tangan memegang lutut, punggung lurus</div>
+                </div>
+
+                <!-- I'tidal -->
+                <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px">
+                    <div style="font-weight:600;color:var(--txt);margin-bottom:6px">🧍 I'tidal</div>
+                    <div style="font-size:18px;color:var(--acc);text-align:center;margin:8px 0;line-height:1.8">
+                        سَمِعَ اللهُ لِمَنْ حَمِدَهُ<br>
+                        رَبَّنَا لَكَ الْحَمْدُ
+                    </div>
+                    <div style="font-size:12px;color:var(--txt-d);text-align:center">"Sami'allaahu liman hamidah, Rabbanaa lakal hamd"</div>
+                    <div style="font-size:12px;color:var(--txt-d);margin-top:6px">Berdiri tegak setelah rukuk, tangan di samping badan</div>
+                </div>
+
+                <!-- Sujud -->
+                <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px">
+                    <div style="font-weight:600;color:var(--txt);margin-bottom:6px">🤲 Sujud</div>
+                    <div style="font-size:18px;color:var(--acc);text-align:center;margin:8px 0;line-height:1.8">
+                        سُبْحَانَكَ اللَّهُمَّ رَبَّنَا وَبِحَمْدِكَ<br>
+                        اَللَّهُمَّ اغْفِرْ لِي
+                    </div>
+                    <div style="font-size:12px;color:var(--txt-d);text-align:center">"Subhaanaka Allaahumma Rabbanaa wa bihamdik, Allaahummaghfirlii"</div>
+                    <div style="font-size:12px;color:var(--txt-d);margin-top:6px">7 anggota sujud: dahi, hidung, 2 telapak tangan, 2 lutut, 2 ujung kaki</div>
+                </div>
+
+                <!-- Duduk Antara Dua Sujud -->
+                <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px">
+                    <div style="font-weight:600;color:var(--txt);margin-bottom:6px">🪑 Duduk Antara Dua Sujud</div>
+                    <div style="font-size:18px;color:var(--acc);text-align:center;margin:8px 0;line-height:1.8">
+                        اَللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَاجْبُرْنِي وَاهْدِنِي وَارْزُقْنِي وَعَافِنِي
+                    </div>
+                    <div style="font-size:12px;color:var(--txt-d);text-align:center">"Allaahummaghfirlii warhamnii wajburnii wahdinii warzuqnii wa'aafinii"</div>
+                    <div style="font-size:12px;color:var(--txt-d);margin-top:6px">Duduk di atas kaki kiri, kaki kanan tegak</div>
+                </div>
+
+                <!-- Tasyahhud -->
+                <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px">
+                    <div style="font-weight:600;color:var(--txt);margin-bottom:6px">📜 Tasyahhud</div>
+                    <div style="font-size:16px;color:var(--acc);text-align:center;margin:8px 0;line-height:2">
+                        اَلتَّحِيَّاتُ الْمُبَارَكَاتُ الصَّلَوَاتُ الطَّيِّبَاتُ لِلَّهِ<br>
+                        اَلسَّلَامُ عَلَيْكَ اَيُّهَا النَّبِيُّ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ<br>
+                        اَلسَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللهِ الصَّالِحِينَ<br>
+                        أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللهِ
+                    </div>
+                    <div style="font-size:12px;color:var(--txt-d);text-align:center;margin-top:8px">
+                        "At-tahiyyaatul mubaarakaatush shalawaatuth thayyibaatulillaah. As-salaamu 'alaika ayyuhan nabiyyu wa rahmatullaahi wa barakaatuh. As-salaamu 'alainaa wa 'alaa 'ibaadillaahish shaalihiin. Asyhadu an laa ilaaha illallaahu wa asyhadu anna muhammadar rasuulullaah"
+                    </div>
+                </div>
+
+                <!-- Salam -->
+                <div style="background:var(--card);border-radius:12px;padding:14px">
+                    <div style="font-weight:600;color:var(--txt);margin-bottom:6px">👋 Salam</div>
+                    <div style="font-size:20px;color:var(--acc);text-align:center;margin:8px 0;line-height:1.8">
+                        اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ
+                    </div>
+                    <div style="font-size:12px;color:var(--txt-d);text-align:center">"As-salaamu 'alaikum wa rahmatullaah"</div>
+                    <div style="font-size:12px;color:var(--txt-d);margin-top:6px">Tengok ke kanan lalu ke kiri, mengakhiri shalat</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extra Guide -->
+        <div id="guideExtra" class="subtab-content" style="display:none;padding:16px">
+            <div style="background:var(--gold-d);border:1px solid var(--gold);border-radius:16px;padding:20px;margin-bottom:16px">
+                <div style="font-weight:700;font-size:16px;color:var(--gold);margin-bottom:8px">⭐ Shalat Sunnah</div>
+                <div style="font-size:13px;color:var(--txt-d)">Shalat-shalat sunnah yang dianjurkan</div>
+            </div>
+
+            <!-- Witir -->
+            <div class="guide-card" style="border-right:3px solid var(--gold)">
+                <div class="guide-num" style="background:var(--gold);color:#000">🌙</div>
+                <div>
+                    <div class="guide-title">Shalat Witir — 1/3/5/7/9 Rakaat</div>
+                    <div class="guide-desc">Shalat penutup malam, dikerjakan setelah Isya hingga Subuh</div>
+                    <div class="guide-arab" style="margin-top:8px">أُصَلِّي سُنَّةَ الْوِتْرِ رَكْعَتَيْنِ/ثَلَاثَ رَكَعَاتٍ لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii sunnatal witri rak'ataini/tsalaatsa raka'aatin lillaahi ta'aalaa"</div>
+                </div>
+            </div>
+
+            <!-- Tahajud -->
+            <div class="guide-card" style="border-right:3px solid #6366f1">
+                <div class="guide-num" style="background:#6366f1;color:#fff">🌃</div>
+                <div>
+                    <div class="guide-title">Shalat Tahajud — 2 Rakaat</div>
+                    <div class="guide-desc">Dikerjakan setelah tidur di sepertiga malam (setelah Isya)</div>
+                    <div class="guide-arab" style="margin-top:8px">أُصَلِّي سُنَّةَ التَّهَجُّدِ رَكْعَتَيْنِ لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii sunnatat tahajjudi rak'ataini lillaahi ta'aalaa"</div>
+                    <div class="guide-note">Waktu terbaik: sepertiga malam terakhir (sekitar pukul 01:00-04:00)</div>
+                </div>
+            </div>
+
+            <!-- Dhuha -->
+            <div class="guide-card" style="border-right:3px solid #f59e0b">
+                <div class="guide-num" style="background:#f59e0b;color:#000">☀️</div>
+                <div>
+                    <div class="guide-title">Shalat Dhuha — 2/4/6/8 Rakaat</div>
+                    <div class="guide-desc">Dikerjakan saat matahari naik setinggi tombak (07:00-11:00)</div>
+                    <div class="guide-arab" style="margin-top:8px">أُصَلِّي سُنَّةَ الضُّحَى رَكْعَتَيْنِ لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii sunnatadh dhuhaa rak'ataini lillaahi ta'aalaa"</div>
+                    <div class="guide-note">Pahala seperti bersedekah untuk 360 sendi tubuh</div>
+                </div>
+            </div>
+
+            <!-- Rawatib -->
+            <div class="guide-card" style="border-right:3px solid var(--acc)">
+                <div class="guide-num">🕌</div>
+                <div>
+                    <div class="guide-title">Shalat Rawatib — 2 Rakaat</div>
+                    <div class="guide-desc">Shalat sunnah sebelum/sesudah shalat fardhu</div>
+                    <div style="background:var(--card);border-radius:10px;padding:12px;margin-top:10px;font-size:13px;color:var(--txt-d)">
+                        <div style="font-weight:600;color:var(--acc);margin-bottom:6px">Jumlah Rakaat:</div>
+                        • Subuh: 2 rakaat sebelum<br>
+                        • Dzuhur: 2+2 rakaat (sebelum & sesudah)<br>
+                        • Ashar: -<br>
+                        • Maghrib: 2 rakaat sesudah<br>
+                        • Isya: 2 rakaat sesudah
+                    </div>
+                </div>
+            </div>
+
+            <!-- Istikharah -->
+            <div class="guide-card" style="border-right:3px solid #8b5cf6">
+                <div class="guide-num" style="background:#8b5cf6;color:#fff">🤲</div>
+                <div>
+                    <div class="guide-title">Shalat Istikharah — 2 Rakaat</div>
+                    <div class="guide-desc">Memohon petunjuk Allah dalam memilih/mengambil keputusan</div>
+                    <div class="guide-arab" style="margin-top:8px">أُصَلِّي سُنَّةَ الاِسْتِخَارَةِ رَكْعَتَيْنِ لِلَّهِ تَعَالَى</div>
+                    <div class="guide-latin">"Ushallii sunnatal istikhaaratii rak'ataini lillaahi ta'aalaa"</div>
+                    <div class="guide-note">Dikerjakan 2 rakaat + baca doa istikharah setelah salam</div>
+                </div>
+            </div>
+
+            <!-- Doa Istikharah -->
+            <div style="background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:20px;margin-top:16px">
+                <div style="font-weight:700;color:var(--txt);margin-bottom:12px">🤲 Doa Istikharah</div>
+                <div style="font-size:14px;color:var(--acc);text-align:center;line-height:2;margin-bottom:12px">
+                    اَللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ فَإِنَّكَ تَقْدِرُ وَلَا أَقْدِرُ وَتَعْلَمُ وَلَا أَعْلَمُ وَأَنْتَ عَلَّامُ الْغُيُوبِ
+                </div>
+                <div style="font-size:12px;color:var(--txt-d);text-align:center;font-style:italic">
+                    "Allaahumma innii astakhiiruka bi'ilmika wa astaqdiruka qudratika wa as'aluka min fadlikal 'azhiimi fa innaka taqdiru wa laa aqdiru wa ta'lamu wa laa a'lamu wa anta 'allaamul ghuyuub"
+                </div>
+                <div style="font-size:12px;color:var(--txt-d);text-align:center;margin-top:8px">
+                    Ya Allah, sesungguhnya aku memohon pilihan kepada-Mu dengan ilmu-Mu, dan memohon kekuatan dengan kekuatan-Mu, dan aku memohon kepada-Mu dari kemuliaan-Mu yang agung. Karena sesungguhnya Engkau Maha Berkuasa dan aku tidak berkuasa, Engkau Maha Mengetahui dan aku tidak mengetahui, dan Engkau Maha Mengetahui perkara yang ghaib
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- COMMUNITY TAB -->
     <div id="tabCommunity" class="tc">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px">
@@ -288,6 +675,7 @@
         <div class="nav-i active" data-tab="tabHome"><span class="nav-ic">🏠</span><span>Beranda</span></div>
         <div class="nav-i" data-tab="tabMosque"><span class="nav-ic">🕌</span><span>Masjid</span></div>
         <div class="nav-i" data-tab="tabQibla"><span class="nav-ic">🧭</span><span>Kiblat</span></div>
+        <div class="nav-i" data-tab="tabGuide"><span class="nav-ic">📖</span><span>Panduan</span></div>
         <div class="nav-i" data-tab="tabCommunity"><span class="nav-ic">📅</span><span>Kegiatan</span></div>
         <div class="nav-i" data-tab="tabDonate"><span class="nav-ic">💝</span><span>Donasi</span></div>
     </div>
@@ -633,6 +1021,14 @@
             document.querySelectorAll('.tc').forEach(x => x.classList.remove('active'));
             n.classList.add('active');
             document.getElementById(n.dataset.tab).classList.add('active');
+        }));
+
+        // Sub-tabs for Prayer Guide
+        document.querySelectorAll('[data-subtab]').forEach(t => t.addEventListener('click', () => {
+            document.querySelectorAll('[data-subtab]').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.subtab-content').forEach(x => x.style.display = 'none');
+            t.classList.add('active');
+            document.getElementById(t.dataset.subtab).style.display = 'block';
         }));
     }
 
