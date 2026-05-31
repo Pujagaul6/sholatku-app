@@ -1,17 +1,18 @@
 {
-    "name": "SholatKu - Jadwal Sholat & Masjid",
-    "short_name": "SholatKu",
-    "description": "Jadwal sholat, arah kiblat, dan masjid terdekat",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#0a0f0d",
-    "theme_color": "#0d4f2b",
-    "orientation": "portrait",
-    "icons": [
-        {
-            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕌</text></svg>",
-            "sizes": "any",
-            "type": "image/svg+xml"
-        }
-    ]
+  "name": "SholatKu — Jadwal Sholat & Masjid",
+  "short_name": "SholatKu",
+  "description": "Jadwal sholat, masjid terdekat, dan komunitas Islami",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f0d",
+  "theme_color": "#0d4f2b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230d4f2b'/><text x='256' y='380' font-size='300' text-anchor='middle'>🕌</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
