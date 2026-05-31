@@ -2266,7 +2266,109 @@
         }
     }
 
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/static/sw.js').catch(()=>{});
+    // Register Service Worker with update check
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(reg => {
+                    console.log('[App] SW registered:', reg.scope);
+                    
+                    // Check for updates
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'activated') {
+                                showUpdateNotification();
+                            }
+                        });
+                    });
+                })
+                .catch(err => console.log('[App] SW registration failed:', err));
+        });
+    }
+
+    // Offline/Online detection
+    window.addEventListener('online', () => {
+        document.body.classList.remove('offline');
+        showToast('✅ Kembali online', 'success');
+        // Sync pending data
+        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+            navigator.serviceWorker.ready.then(reg => {
+                reg.sync.register('sync-reviews');
+                reg.sync.register('sync-events');
+            });
+        }
+    });
+
+    window.addEventListener('offline', () => {
+        document.body.classList.add('offline');
+        showToast('📴 Mode offline — data terakhir ditampilkan', 'warning');
+    });
+
+    // Show update notification
+    function showUpdateNotification() {
+        const div = document.createElement('div');
+        div.style.cssText = 'position:fixed;bottom:80px;left:16px;right:16px;background:var(--acc);color:#000;padding:14px 20px;border-radius:14px;z-index:9999;font-weight:600;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 24px rgba(0,0,0,.3)';
+        div.innerHTML = `
+            <span>🔄 Update tersedia</span>
+            <button onclick="this.parentElement.remove();location.reload()" style="background:#000;color:var(--acc);border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700">Update</button>
+        `;
+        document.body.appendChild(div);
+    }
+
+    // Toast notification (enhanced)
+    function showToast(msg, type = 'info') {
+        const toast = document.getElementById('toast') || createToast();
+        toast.textContent = msg;
+        toast.className = 'toast show ' + type;
+        setTimeout(() => toast.className = 'toast', 3000);
+    }
+
+    function createToast() {
+        const toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;padding:1rem 1.5rem;border-radius:0.5rem;color:white;font-weight:600;opacity:0;transition:opacity 0.3s';
+        document.body.appendChild(toast);
+        return toast;
+    }
+
+    // Cache prayer times for offline
+    async function cachePrayerTimes(data) {
+        if ('caches' in window) {
+            const cache = await caches.open('sholatku-v3-api');
+            cache.put('/api/prayer-times', new Response(JSON.stringify(data)));
+        }
+    }
+
+    // Load cached prayer times
+    async function loadCachedPrayerTimes() {
+        if ('caches' in window) {
+            const cached = await caches.match('/api/prayer-times');
+            if (cached) return cached.json();
+        }
+        return null;
+    }
+
+    // Add offline styles
+    const offlineStyle = document.createElement('style');
+    offlineStyle.textContent = `
+        .offline .online-only { display: none !important; }
+        .offline::after {
+            content: '📴 Mode Offline';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #f59e0b;
+            color: #000;
+            text-align: center;
+            padding: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 9999;
+        }
+    `;
+    document.head.appendChild(offlineStyle);
     </script>
 </body>
 </html>
