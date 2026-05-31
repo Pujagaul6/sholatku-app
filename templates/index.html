@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0d4f2b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>SholatKu — Jadwal Sholat & Masjid</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕌</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#0a0f0d;--card:#111a14;--card-h:#162118;--acc:#2ecc71;--acc-d:rgba(46,204,113,.15);--acc-g:rgba(46,204,113,.3);--gold:#f1c40f;--gold-d:rgba(241,196,15,.15);--txt:#e8f5e9;--txt-d:rgba(232,245,233,.5);--txt-m:rgba(232,245,233,.3);--bor:rgba(46,204,113,.1);--red:#e74c3c}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+        /* Header */
+        .hdr{background:linear-gradient(135deg,#0d4f2b,#1a7a4a,#0d4f2b);padding:16px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--bor)}
+        .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+        .app-n{font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px}
+        .loc-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--txt);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px}
+        .date-row{display:flex;justify-content:space-between;font-size:13px;opacity:.8}
+        .hijri{color:var(--gold);font-weight:600}
+
+        /* Next Prayer */
+        .np-card{background:linear-gradient(135deg,var(--acc-d),rgba(46,204,113,.05));border:1px solid var(--acc);border-radius:20px;padding:24px;margin:16px;text-align:center;position:relative;overflow:hidden}
+        .np-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,var(--acc-g),transparent);opacity:.3;animation:pg 3s ease-in-out infinite}
+        @keyframes pg{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.1);opacity:.5}}
+        .np-lbl{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--acc);margin-bottom:8px;position:relative}
+        .np-name{font-size:32px;font-weight:800;position:relative}
+        .np-time{font-size:48px;font-weight:300;position:relative;letter-spacing:2px}
+        .cd-text{font-size:14px;color:var(--txt-d);margin-top:8px;position:relative}
+        .cd-text span{color:var(--acc);font-weight:600}
+        .cd-progress-wrap{position:relative;margin-top:14px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+        .cd-progress-bar{height:100%;border-radius:3px;transition:width 1s linear;background:var(--acc)}
+        .cd-progress-bar.warn{background:#f59e0b}
+        .cd-progress-bar.urgent{background:#ef4444}
+        .cd-prev{font-size:12px;color:var(--txt-d);margin-top:10px;position:relative}
+        .cd-prev span{color:var(--txt);font-weight:500}
+
+        /* Prayer Grid */
+        .sec-t{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt-d);padding:16px 16px 8px}
+        .p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 16px}
+        .p-item{background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:16px 12px;text-align:center;transition:.3s}
+        .p-item.active{background:var(--acc-d);border-color:var(--acc);box-shadow:0 0 20px var(--acc-g)}
+        .p-item.passed{opacity:.4}
+        .p-icon{font-size:20px;margin-bottom:6px}
+        .p-name{font-size:13px;font-weight:600;margin-bottom:4px}
+        .p-time{font-size:18px;font-weight:300}
+        .p-item.active .p-time{color:var(--acc);font-weight:600}
+
+        /* Tabs */
+        .tabs{display:flex;padding:0 16px;gap:4px;margin-bottom:12px}
+        .tab{flex:1;padding:10px;text-align:center;background:var(--card);border:1px solid var(--bor);border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;transition:.2s}
+        .tab.active{background:var(--acc-d);border-color:var(--acc);color:var(--acc)}
+        .tab:hover:not(.active){background:var(--card-h)}
+
+        /* Cards */
+        .card{background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:16px;margin-bottom:8px;transition:.2s;cursor:pointer}
+        .card:hover{background:var(--card-h);border-color:var(--acc)}
+        .card-icon{width:48px;height:48px;background:var(--acc-d);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+        .card-row{display:flex;gap:12px}
+        .card-body{flex:1;min-width:0}
+        .card-title{font-size:15px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .card-sub{font-size:12px;color:var(--txt-d);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .card-meta{display:flex;gap:12px;font-size:11px}
+        .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+        .badge-acc{background:var(--acc-d);color:var(--acc)}
+        .badge-gold{background:var(--gold-d);color:var(--gold)}
+        .badge-red{background:rgba(231,76,60,.15);color:var(--red)}
+
+        /* Stars */
+        .stars{color:var(--gold);font-size:12px;letter-spacing:1px}
+        .dist{color:var(--acc);font-weight:600;font-size:11px}
+
+        /* Lists */
+        .lst{padding:0 16px 100px}
+
+        /* Detail Modal */
+        .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;justify-content:center;align-items:flex-end;padding:0}
+        .modal-bg.active{display:flex}
+        .modal-sheet{background:var(--bg);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding:20px 16px;animation:slideUp .3s ease-out}
+        @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+        .modal-handle{width:40px;height:4px;background:var(--bor);border-radius:2px;margin:0 auto 16px}
+        .modal-close{float:right;background:none;border:none;color:var(--txt-d);font-size:20px;cursor:pointer}
+
+        /* Form */
+        .frm-g{margin-bottom:12px}
+        .frm-l{font-size:12px;color:var(--txt-d);margin-bottom:4px;display:block}
+        .frm-i{width:100%;padding:10px 14px;background:var(--card);border:1px solid var(--bor);border-radius:10px;color:var(--txt);font-size:14px}
+        .frm-i:focus{outline:none;border-color:var(--acc)}
+        select.frm-i{appearance:none}
+        textarea.frm-i{resize:vertical;min-height:60px}
+        .btn{padding:12px;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:.2s}
+        .btn-acc{background:var(--acc);color:#000}
+        .btn-acc:hover{opacity:.9}
+        .btn-ghost{background:transparent;border:1px solid var(--bor);color:var(--txt);margin-top:8px}
+
+        /* Rating */
+        .rating-stars{display:flex;gap:4px;margin:8px 0}
+        .rating-stars .star{font-size:28px;cursor:pointer;color:var(--bor);transition:.1s}
+        .rating-stars .star.on{color:var(--gold)}
+
+        /* Donation */
+        .donate-amt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+        .donate-opt{padding:12px;background:var(--card);border:1px solid var(--bor);border-radius:12px;text-align:center;cursor:pointer;font-weight:600;transition:.2s}
+        .donate-opt.on{background:var(--acc-d);border-color:var(--acc);color:var(--acc)}
+        .donate-custom{margin-top:8px}
+
+        /* Compass */
+        .compass{width:220px;height:220px;border-radius:50%;border:3px solid var(--acc);margin:20px auto;position:relative;background:radial-gradient(circle,var(--acc-d),transparent);overflow:hidden}
+        .compass-dial{width:100%;height:100%;border-radius:50%;position:relative;transition:transform 0.15s ease-out}
+        .compass-needle{position:absolute;top:50%;left:50%;width:4px;height:85px;background:linear-gradient(to top,transparent,var(--acc));transform-origin:bottom center;transform:translate(-50%,-100%);border-radius:2px;z-index:2}
+        .compass-needle::after{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid var(--acc)}
+        .compass-kabah{position:absolute;top:50%;left:50%;font-size:20px;transform:translate(-50%,-50%);z-index:3;filter:drop-shadow(0 0 4px rgba(0,0,0,.5))}
+        .compass-lbl{position:absolute;font-size:11px;font-weight:700;color:var(--txt-d);z-index:1}
+        .compass-lbl.t{top:8px;left:50%;transform:translateX(-50%)}
+        .compass-lbl.r{right:8px;top:50%;transform:translateY(-50%)}
+        .compass-lbl.b{bottom:8px;left:50%;transform:translateX(-50%)}
+        .compass-lbl.l{left:8px;top:50%;transform:translateY(-50%)}
+        .compass-lbl.utara{color:var(--acc)}
+        .compass-status{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;margin-top:12px}
+        .compass-status.live{background:#0e3b22;color:#34d399}
+        .compass-status.static{background:#3b2e0e;color:#fbbf24}
+
+        /* Bottom Nav */
+        .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bor);display:flex;padding:8px 16px;padding-bottom:calc(8px + env(safe-area-inset-bottom));z-index:100}
+        .nav-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:12px;cursor:pointer;font-size:10px;color:var(--txt-d);transition:.2s}
+        .nav-i.active{color:var(--acc);background:var(--acc-d)}
+        .nav-i:hover:not(.active){color:var(--txt)}
+        .nav-ic{font-size:20px}
+
+        .tc{display:none}.tc.active{display:block}
+        .loading{text-align:center;padding:40px;color:var(--txt-d)}
+        .spinner{width:32px;height:32px;border:3px solid var(--bor);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .empty{text-align:center;padding:40px 20px;color:var(--txt-d)}
+        .empty .ic{font-size:48px;margin-bottom:12px}
+
+        @media(min-width:768px){body{max-width:480px;margin:0 auto}.bnav{max-width:480px;left:50%;transform:translateX(-50%)}}
+
+        /* Adhan notification */
+        .adhan-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:2px solid var(--acc);border-radius:20px;padding:32px 24px;text-align:center;z-index:300;min-width:280px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+        .adhan-popup.show{display:block;animation:fadeIn .5s}
+        @keyframes fadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+        .adhan-popup .adhan-icon{font-size:64px;margin-bottom:12px}
+        .adhan-popup .adhan-title{font-size:24px;font-weight:700;margin-bottom:4px}
+        .adhan-popup .adhan-sub{color:var(--txt-d);margin-bottom:16px}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="hdr">
+        <div class="hdr-top">
+            <div class="app-n"><span>🕌</span><span>SholatKu</span></div>
+            <button class="loc-btn" onclick="showModal('settingsModal')">📍 <span id="cityName">Mendeteksi...</span></button>
+        </div>
+        <div class="date-row">
+            <span id="gregDate">-</span>
+            <span class="hijri" id="hijriDate">-</span>
+        </div>
+    </div>
+
+    <!-- HOME -->
+    <div id="tabHome" class="tc active">
+        <div class="np-card">
+            <div class="np-lbl">Sholat Berikutnya</div>
+            <div class="np-name" id="npName">-</div>
+            <div class="np-time" id="npTime">--:--</div>
+            <div class="cd-text">Menuju waktu sholat: <span id="countdown">--:--:--</span></div>
+            <div class="cd-progress-wrap"><div class="cd-progress-bar" id="cdProgressBar" style="width:0%"></div></div>
+            <div class="cd-prev" id="cdPrev"></div>
+        </div>
+        <!-- Daily Wisdom -->
+        <div id="dailyWisdom" style="margin:0 16px 8px;padding:16px;background:var(--card);border-radius:16px;border:1px solid var(--bor);cursor:pointer" onclick="refreshWisdom()">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <span style="font-size:16px">📖</span>
+                <span style="font-size:12px;font-weight:600;color:var(--acc);text-transform:uppercase;letter-spacing:1px" id="wisdomType">Ayat Hari Ini</span>
+            </div>
+            <div id="wisdomText" style="font-size:14px;line-height:1.6;color:var(--txt);font-style:italic">Memuat...</div>
+            <div id="wisdomSource" style="font-size:12px;color:var(--txt-d);margin-top:8px;text-align:right"></div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="display:flex;gap:8px;padding:0 16px 12px">
+            <button onclick="showModal('tasbihModal')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;background:var(--card);border:1px solid var(--bor);border-radius:14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--txt)">📿 Tasbih</button>
+            <button onclick="toggleWeekly()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;background:var(--card);border:1px solid var(--bor);border-radius:14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--txt)">📅 Jadwal Mingguan</button>
+        </div>
+
+        <div class="sec-t">Jadwal Sholat Hari Ini</div>
+        <div class="p-grid" id="prayerGrid"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+        <div style="text-align:center;margin:-4px 0 12px">
+            <button class="btn btn-ghost" id="btnWeekly" onclick="toggleWeekly()" style="font-size:12px;padding:6px 16px">📅 Jadwal Mingguan ▾</button>
+        </div>
+        <div id="weeklyWrap" style="display:none;margin:0 16px 16px;overflow-x:auto">
+            <div id="weeklyGrid" style="font-size:12px"></div>
+        </div>
+        <div class="sec-t">🕌 Masjid Terdekat</div>
+        <div id="mosquePreview" class="lst" style="padding-bottom:16px"><div class="loading"><div class="spinner"></div>Mencari...</div></div>
+        <div class="sec-t">📅 Kegiatan Terdekat</div>
+        <div id="eventPreview" class="lst" style="padding-bottom:16px"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+    </div>
+
+    <!-- MOSQUE TAB -->
+    <div id="tabMosque" class="tc">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px">
+            <div class="sec-t" style="padding:0">🕌 Semua Masjid</div>
+            <button onclick="openSuggestModal()" style="background:var(--acc-d);color:var(--acc);border:1px solid var(--acc);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:600">+ Sarankan Masjid</button>
+        </div>
+        <div id="mosqueCount" style="padding:0 16px 8px;font-size:12px;color:var(--txt-d)"></div>
+        <div id="mosqueList" class="lst"><div class="loading"><div class="spinner"></div>Mencari...</div></div>
+    </div>
+
+    <!-- QIBLA TAB -->
+    <div id="tabQibla" class="tc">
+        <div class="sec-t">🧭 Arah Kiblat</div>
+        <div style="text-align:center;padding:16px">
+            <div class="compass" id="compass">
+                <div class="compass-dial" id="compassDial">
+                    <span class="compass-lbl t utara" id="lblU">U</span>
+                    <span class="compass-lbl r" id="lblT">T</span>
+                    <span class="compass-lbl b" id="lblS">S</span>
+                    <span class="compass-lbl l" id="lblB">B</span>
+                    <div class="compass-needle" id="compassNeedle"></div>
+                    <div class="compass-kabah" id="compassKabah" style="display:none">🕋</div>
+                </div>
+            </div>
+            <div style="margin-top:16px;font-size:14px;color:var(--txt-d)">
+                Arah Kiblat: <strong id="qiblaDir" style="color:var(--acc)">-</strong> dari Utara<br>
+                <small id="qiblaDetail">Menghitung...</small>
+            </div>
+            <div id="compassStatus" class="compass-status static">
+                <span>📍</span> <span id="compassStatusText">Kompas statis</span>
+            </div>
+            <div style="margin-top:12px">
+                <button class="btn btn-ghost" id="btnCalibrate" onclick="calibrateCompass()" style="display:none">🔄 Kalibrasi Kompas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMUNITY TAB -->
+    <div id="tabCommunity" class="tc">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px">
+            <div class="sec-t" style="padding:0">📅 Kegiatan Masjid</div>
+            <button onclick="openSuggestEvent()" style="background:var(--acc-d);color:var(--acc);border:1px solid var(--acc);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:600">📢 Laporkan Kegiatan</button>
+        </div>
+        <div id="eventList" class="lst"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+    </div>
+
+    <!-- DONATE TAB -->
+    <div id="tabDonate" class="tc">
+        <div class="sec-t">💝 Donasi Masjid</div>
+        <div style="text-align:center;padding:40px 20px">
+            <div style="font-size:64px;margin-bottom:16px">💝</div>
+            <h2 style="margin-bottom:8px;color:var(--acc)">Segera Hadir!</h2>
+            <p style="color:var(--txt-d);font-size:14px;line-height:1.6;margin-bottom:24px">
+                Fitur donasi masjid sedang dalam pengembangan.<br>
+                Anda akan bisa berdonasi langsung ke masjid terdekat.
+            </p>
+            <div style="background:var(--card);border-radius:16px;padding:20px;text-align:left;max-width:320px;margin:0 auto">
+                <div style="font-weight:600;margin-bottom:12px;color:var(--txt)">Fitur yang akan hadir:</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--txt-d)">
+                    <span>🕌</span> Donasi ke masjid pilihan
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--txt-d)">
+                    <span>📱</span> Bayar via QRIS, GoPay, OVO, VA
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--txt-d)">
+                    <span>🎯</span> Campaign & target donasi
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--txt-d)">
+                    <span>📊</span> Laporan transparan untuk DKM
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--txt-d)">
+                    <span>🔄</span> Donasi otomatis setiap bulan
+                </div>
+            </div>
+            <div style="margin-top:24px;padding:14px 20px;background:var(--acc-d);border-radius:12px;display:inline-block">
+                <span style="font-size:13px;color:var(--acc)">💡 Ingin masjid Anda terdaftar? Hubungi admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bnav">
+        <div class="nav-i active" data-tab="tabHome"><span class="nav-ic">🏠</span><span>Beranda</span></div>
+        <div class="nav-i" data-tab="tabMosque"><span class="nav-ic">🕌</span><span>Masjid</span></div>
+        <div class="nav-i" data-tab="tabQibla"><span class="nav-ic">🧭</span><span>Kiblat</span></div>
+        <div class="nav-i" data-tab="tabCommunity"><span class="nav-ic">📅</span><span>Kegiatan</span></div>
+        <div class="nav-i" data-tab="tabDonate"><span class="nav-ic">💝</span><span>Donasi</span></div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-bg" id="settingsModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <h3 style="margin-bottom:16px">📍 Pengaturan Lokasi</h3>
+            <div class="frm-g">
+                <input type="text" class="frm-i" id="inputCity" placeholder="Ketik nama kota...">
+            </div>
+            <button class="btn btn-acc" onclick="searchCity()">🔍 Cari Kota</button>
+            <button class="btn btn-ghost" onclick="detectGPS()">📍 Deteksi GPS Otomatis</button>
+            <button class="btn btn-ghost" onclick="hideModal('settingsModal')">Batal</button>
+            <div id="cityResults" style="margin-top:12px"></div>
+        </div>
+    </div>
+
+    <!-- Mosque Detail Modal -->
+    <div class="modal-bg" id="mosqueDetailModal">
+        <div class="modal-sheet" id="mosqueDetailContent">
+            <div class="modal-handle"></div>
+            <div class="loading"><div class="spinner"></div>Memuat...</div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal-bg" id="reviewModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <h3 style="margin-bottom:16px">⭐ Tulis Ulasan</h3>
+            <input type="hidden" id="reviewMosqueId">
+            <div class="frm-g">
+                <label class="frm-l">Nama</label>
+                <input type="text" class="frm-i" id="reviewName" placeholder="Nama Anda">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Rating</label>
+                <div class="rating-stars" id="ratingStars">
+                    <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span><span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span>
+                </div>
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Komentar</label>
+                <textarea class="frm-i" id="reviewComment" placeholder="Bagaimana pengalaman Anda?"></textarea>
+            </div>
+            <button class="btn btn-acc" onclick="submitReview()">Kirim Ulasan</button>
+            <button class="btn btn-ghost" onclick="hideModal('reviewModal')">Batal</button>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div class="modal-bg" id="eventDetailModal">
+        <div class="modal-sheet" id="eventDetailContent">
+            <div class="modal-handle"></div>
+            <div class="loading"><div class="spinner"></div>Memuat...</div>
+        </div>
+    </div>
+
+    <!-- Tasbih Modal -->
+    <div class="modal-bg" id="tasbihModal">
+        <div class="modal-sheet" style="text-align:center;padding:32px 24px">
+            <div class="modal-handle"></div>
+            <button class="modal-close" onclick="hideModal('tasbihModal')">✕</button>
+            <div style="font-size:14px;color:var(--txt-d);margin-bottom:8px" id="tasbihLabel">Subhanallah</div>
+            <div id="tasbihCount" style="font-size:72px;font-weight:800;color:var(--acc);line-height:1;cursor:pointer;user-select:none;-webkit-user-select:none">0</div>
+            <div style="font-size:13px;color:var(--txt-d);margin:8px 0" id="tasbihTarget">Target: 33</div>
+            <div style="height:6px;background:var(--card);border-radius:3px;margin:12px 40px;overflow:hidden">
+                <div id="tasbihProgress" style="height:100%;background:var(--acc);border-radius:3px;transition:width 0.2s;width:0%"></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+                <button class="btn btn-ghost" onclick="tasbihReset()" style="font-size:13px">↺ Reset</button>
+                <button class="btn btn-ghost" onclick="tasbihTarget()" style="font-size:13px">🎯 Target</button>
+                <button class="btn btn-ghost" onclick="tasbihDhikr()" style="font-size:13px">📿 Ganti Dhikr</button>
+            </div>
+            <div style="display:flex;gap:6px;justify-content:center;margin-top:12px;flex-wrap:wrap" id="tasbihQuickTarget">
+                <span onclick="setTasbihTarget(33)" style="padding:4px 12px;background:var(--card);border-radius:16px;font-size:12px;cursor:pointer;color:var(--txt-d)">33</span>
+                <span onclick="setTasbihTarget(99)" style="padding:4px 12px;background:var(--card);border-radius:16px;font-size:12px;cursor:pointer;color:var(--txt-d)">99</span>
+                <span onclick="setTasbihTarget(100)" style="padding:4px 12px;background:var(--card);border-radius:16px;font-size:12px;cursor:pointer;color:var(--txt-d)">100</span>
+                <span onclick="setTasbihTarget(1000)" style="padding:4px 12px;background:var(--card);border-radius:16px;font-size:12px;cursor:pointer;color:var(--txt-d)">1000</span>
+            </div>
+            <div style="margin-top:16px;padding:12px;background:var(--card);border-radius:12px;font-size:12px;color:var(--txt-d)">
+                💡 Tap angka atau layar untuk menghitung. Getaran akan bergetar setiap tap.
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggest Event Modal -->
+    <div class="modal-bg" id="suggestEventModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <button class="modal-close" onclick="hideModal('suggestEventModal')">✕</button>
+            <h2 style="margin-bottom:16px">📢 Laporkan Kegiatan</h2>
+            <p style="font-size:13px;color:var(--txt-d);margin-bottom:16px">Bantu komunitas dengan melaporkan kegiatan masjid di sekitar Anda.</p>
+            <div class="frm-g">
+                <label class="frm-l">Nama Masjid *</label>
+                <select class="frm-i" id="suggestEventMosque">
+                    <option value="">-- Pilih Masjid --</option>
+                </select>
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Judul Kegiatan *</label>
+                <input type="text" class="frm-i" id="suggestEventTitle" placeholder="Contoh: Pengajian Rutin">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Jenis Kegiatan</label>
+                <select class="frm-i" id="suggestEventType">
+                    <option value="Pengajian">📖 Pengajian</option>
+                    <option value="Yasinan">📿 Yasinan</option>
+                    <option value="Kultum">🎤 Kultum</option>
+                    <option value="Sosial">🤝 Sosial</option>
+                    <option value="Event">🎉 Event</option>
+                    <option value="Lainnya">📌 Lainnya</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:8px">
+                <div class="frm-g" style="flex:1">
+                    <label class="frm-l">Tanggal</label>
+                    <input type="date" class="frm-i" id="suggestEventDate">
+                </div>
+                <div class="frm-g" style="flex:1">
+                    <label class="frm-l">Jam</label>
+                    <input type="time" class="frm-i" id="suggestEventTime">
+                </div>
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Deskripsi</label>
+                <textarea class="frm-i" id="suggestEventDesc" placeholder="Deskripsi kegiatan..."></textarea>
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Nama Anda (opsional)</label>
+                <input type="text" class="frm-i" id="suggestEventName" placeholder="Anonim">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:16px">
+                <button class="btn btn-ghost" onclick="hideModal('suggestEventModal')">Batal</button>
+                <button class="btn btn-acc" onclick="submitSuggestEvent()" style="flex:1">Kirim Laporan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donate Modal -->
+    <div class="modal-bg" id="donateModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <h3 style="margin-bottom:16px">💝 Donasi</h3>
+            <input type="hidden" id="donateMosqueId">
+            <p style="font-size:13px;color:var(--txt-d);margin-bottom:12px" id="donateMosqueName">-</p>
+            <div class="donate-amt">
+                <div class="donate-opt" data-v="10000">Rp 10rb</div>
+                <div class="donate-opt" data-v="25000">Rp 25rb</div>
+                <div class="donate-opt" data-v="50000">Rp 50rb</div>
+                <div class="donate-opt" data-v="100000">Rp 100rb</div>
+                <div class="donate-opt" data-v="250000">Rp 250rb</div>
+                <div class="donate-opt" data-v="500000">Rp 500rb</div>
+            </div>
+            <div class="frm-g donate-custom">
+                <label class="frm-l">Atau nominal lain:</label>
+                <input type="number" class="frm-i" id="donateCustom" placeholder="Rp">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Nama (opsional)</label>
+                <input type="text" class="frm-i" id="donateName" placeholder="Hamba Allah">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Pesan (opsional)</label>
+                <textarea class="frm-i" id="donateMsg" placeholder="Semoga berkah..."></textarea>
+            </div>
+            <button class="btn btn-acc" onclick="submitDonate()">💝 Kirim Donasi</button>
+            <button class="btn btn-ghost" onclick="hideModal('donateModal')">Batal</button>
+        </div>
+    </div>
+
+    <!-- Suggest Mosque Modal -->
+    <div class="modal-bg" id="suggestModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <h3 style="margin-bottom:16px">🕌 Sarankan Masjid</h3>
+            <p style="font-size:13px;color:var(--txt-d);margin-bottom:16px">Bantu kami menambahkan masjid yang belum ada di daftar. Masjid akan diverifikasi sebelum ditampilkan.</p>
+            <div class="frm-g">
+                <label class="frm-l">Nama Masjid *</label>
+                <input type="text" class="frm-i" id="suggestName" placeholder="Contoh: Masjid Al-Ikhlas">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Alamat</label>
+                <input type="text" class="frm-i" id="suggestAddr" placeholder="Jl. ...">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Kota</label>
+                <input type="text" class="frm-i" id="suggestCity" placeholder="Tulungagung">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Lokasi GPS</label>
+                <div style="display:flex;gap:8px">
+                    <button class="btn btn-acc" style="flex:1;padding:10px" onclick="suggestGetGPS()">📍 Ambil Lokasi GPS</button>
+                </div>
+                <div id="suggestCoords" style="font-size:12px;color:var(--txt-d);margin-top:6px"></div>
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Nama Anda (opsional)</label>
+                <input type="text" class="frm-i" id="suggestName2" placeholder="Nama Anda">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">No. HP/WA (opsional)</label>
+                <input type="text" class="frm-i" id="suggestPhone" placeholder="08xxx">
+            </div>
+            <div class="frm-g">
+                <label class="frm-l">Catatan</label>
+                <textarea class="frm-i" id="suggestNotes" placeholder="Info tambahan..."></textarea>
+            </div>
+            <button class="btn btn-acc" onclick="submitSuggest()">📤 Kirim Saran</button>
+            <button class="btn btn-ghost" onclick="hideModal('suggestModal')">Batal</button>
+        </div>
+    </div>
+
+    <!-- Adhan Popup -->
+    <div class="adhan-popup" id="adhanPopup">
+        <div class="adhan-icon">🕌</div>
+        <div class="adhan-title" id="adhanTitle">-</div>
+        <div class="adhan-sub">Waktu sholat telah tiba</div>
+        <button class="btn btn-acc" onclick="dismissAdhan()" style="margin-top:12px">OK, Siap</button>
+    </div>
+
+    <script>
+    // ─── STATE ─────────────────────────────────────────
+    const S = {
+        lat: -8.0657, lon: 111.9035, city: 'Tulungagung',
+        prayers: null, mosques: [], events: [],
+        qibla: 0, adhanPlayed: {}, selectedRating: 0, donateAmount: 0, accuracy: 0
+    };
+
+    const P_ICONS = {Fajr:'🌅',Sunrise:'☀️',Dhuhr:'🌞',Asr:'🌤️',Maghrib:'🌇',Isha:'🌙'};
+    const P_NAMES = {Fajr:'Subuh',Sunrise:'Terbit',Dhuhr:'Dzuhur',Asr:'Ashar',Maghrib:'Maghrib',Isha:'Isya'};
+    const E_TYPES = {Pengajian:'📖',Yasinan:'📿',Kultum:'🎤',Sosial:'🤝',Event:'🎉',Lainnya:'📌'};
+
+    // ─── INIT ──────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        setupNav(); setupRating(); setupDonateOpts(); updateDate(); showWisdom();
+        setInterval(updateCD, 1000);
+        setInterval(checkAdhan, 15000); // Check every 15 seconds for precision
+        requestNotifPermission(); // Ask for notification permission
+
+        // Auto-refresh location every 5 minutes (detect movement)
+        setInterval(autoRefreshLocation, 300000);
+
+        // Auto GPS on first visit
+        const saved = localStorage.getItem('sk_loc');
+        if (!saved) {
+            autoDetectGPS();
+        } else {
+            loadLoc();
+            fetchPrayers(); fetchMosquesAPI(); fetchEventsAPI();
+        }
+    });
+
+    async function autoDetectGPS() {
+        document.getElementById('cityName').textContent = 'Mendeteksi GPS...';
+
+        if (!navigator.geolocation) {
+            document.getElementById('cityName').textContent = 'GPS tidak didukung';
+            loadLoc(); fetchPrayers(); fetchMosquesAPI(); fetchEventsAPI();
+            return;
+        }
+
+        // Take multiple GPS readings and pick the best one
+        async function getBestPosition() {
+            return new Promise((resolve, reject) => {
+                let best = null;
+                let attempts = 0;
+                const maxAttempts = 3;
+
+                function tryOnce() {
+                    navigator.geolocation.getCurrentPosition(pos => {
+                        attempts++;
+                        const acc = pos.coords.accuracy;
+                        console.log(`GPS attempt ${attempts}: accuracy=${acc}m`);
+
+                        // Accept if accuracy <= 50m, otherwise keep trying
+                        if (!best || acc < best.coords.accuracy) {
+                            best = pos;
+                        }
+
+                        if (acc <= 50 || attempts >= maxAttempts) {
+                            resolve(best);
+                        } else {
+                            // Wait 1.5s then try again for better lock
+                            setTimeout(tryOnce, 1500);
+                        }
+                    }, err => {
+                        if (attempts === 0) reject(err);
+                        else resolve(best); // use whatever we have
+                    }, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0  // no cache — force fresh reading
+                    });
+                }
+                tryOnce();
+            });
+        }
+
+        try {
+            const pos = await getBestPosition();
+            S.lat = pos.coords.latitude;
+            S.lon = pos.coords.longitude;
+            S.accuracy = Math.round(pos.coords.accuracy);
+
+            // Reverse geocode
+            try {
+                const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${S.lat}&lon=${S.lon}`);
+                const d = await r.json();
+                S.city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || 'Lokasi Anda';
+            } catch(e) { S.city = 'Lokasi Anda'; }
+
+            // Show accuracy indicator
+            const accLabel = S.accuracy <= 30 ? '🎯' : S.accuracy <= 100 ? '📍' : '⚠️';
+            document.getElementById('cityName').textContent = `${S.city} ${accLabel}`;
+
+            saveLoc();
+            fetchPrayers(); fetchMosquesAPI(); fetchEventsAPI();
+
+        } catch(err) {
+            // GPS failed - try IP-based fallback
+            try {
+                const r = await fetch('https://ipapi.co/json/');
+                const d = await r.json();
+                S.lat = d.latitude; S.lon = d.longitude;
+                S.city = d.city || 'Lokasi Anda';
+            } catch(e) {
+                loadLoc();
+            }
+            document.getElementById('cityName').textContent = S.city || 'Pilih Lokasi';
+            if (!S.lat) showModal('settingsModal');
+            saveLoc();
+            fetchPrayers(); fetchMosquesAPI(); fetchEventsAPI();
+        }
+    }
+
+    // ─── NAV ───────────────────────────────────────────
+    function setupNav() {
+        document.querySelectorAll('.nav-i').forEach(n => n.addEventListener('click', () => {
+            document.querySelectorAll('.nav-i').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.tc').forEach(x => x.classList.remove('active'));
+            n.classList.add('active');
+            document.getElementById(n.dataset.tab).classList.add('active');
+        }));
+    }
+
+    // ─── LOCATION ──────────────────────────────────────
+    // Auto-refresh location if user moved significantly (>500m)
+    let lastKnownLat = S.lat, lastKnownLon = S.lon;
+    function autoRefreshLocation() {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(pos => {
+            const newLat = pos.coords.latitude;
+            const newLon = pos.coords.longitude;
+            const dist = getDist(lastKnownLat, lastKnownLon, newLat, newLon);
+            if (dist > 500) {
+                console.log(`Moved ${Math.round(dist)}m — refreshing location`);
+                S.lat = newLat; S.lon = newLon;
+                lastKnownLat = newLat; lastKnownLon = newLon;
+                saveLoc();
+                fetchPrayers(); fetchMosquesAPI(); fetchEventsAPI();
+                // Reverse geocode
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${S.lat}&lon=${S.lon}`)
+                    .then(r => r.json()).then(d => {
+                        S.city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || S.city;
+                        document.getElementById('cityName').textContent = S.city;
+                    }).catch(()=>{});
+            }
+        }, ()=>{}, {enableHighAccuracy:false, timeout:10000, maximumAge:60000});
+    }
+
+    function loadLoc() {
+        const s = localStorage.getItem('sk_loc');
+        if (s) { const l = JSON.parse(s); S.lat=l.lat; S.lon=l.lon; S.city=l.city||'Tersimpan'; }
+        document.getElementById('cityName').textContent = S.city;
+    }
+    function saveLoc() { localStorage.setItem('sk_loc', JSON.stringify({lat:S.lat,lon:S.lon,city:S.city})); }
+
+    function showModal(id) { document.getElementById(id).classList.add('active'); }
+    function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    async function searchCity() {
+        const q = document.getElementById('inputCity').value.trim();
+        if (!q) return;
+        const r = document.getElementById('cityResults');
+        r.innerHTML = '<div class="loading"><div class="spinner"></div>Mencari...</div>';
+        try {
+            const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=id&limit=5`);
+            const data = await resp.json();
+            r.innerHTML = data.length ? data.map(p => `
+                <div class="card" onclick="setCity(${p.lat},${p.lon},'${p.display_name.split(',')[0].replace(/'/g,"\\'")}')">
+                    <div class="card-title">📍 ${p.display_name.split(',')[0]}</div>
+                    <div class="card-sub">${p.display_name.split(',').slice(1,3).join(',')}</div>
+                </div>`).join('') : '<p style="color:var(--txt-d)">Tidak ditemukan</p>';
+        } catch(e) { r.innerHTML = '<p style="color:var(--red)">Gagal mencari</p>'; }
+    }
+
+    function setCity(lat,lon,city) {
+        S.lat=lat; S.lon=lon; S.city=city;
+        document.getElementById('cityName').textContent=city;
+        saveLoc(); hideModal('settingsModal');
+        fetchPrayers(); fetchMosquesAPI(); fetchEventsAPI();
+    }
+
+    function detectGPS() {
+        if (!navigator.geolocation) return alert('GPS tidak didukung');
+        navigator.geolocation.getCurrentPosition(async p => {
+            S.lat=p.coords.latitude; S.lon=p.coords.longitude;
+            try { const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${S.lat}&lon=${S.lon}`);
+                const d=await r.json(); S.city=d.address?.city||d.address?.town||d.address?.village||'Lokasi Anda'; }
+            catch(e) { S.city='Lokasi Anda'; }
+            document.getElementById('cityName').textContent=S.city;
+            saveLoc(); hideModal('settingsModal');
+            fetchPrayers(); fetchMosquesAPI(); fetchEventsAPI();
+        }, () => alert('Gagal deteksi GPS'), {enableHighAccuracy:true});
+    }
+
+    // ─── PRAYER TIMES ──────────────────────────────────
+    async function fetchPrayers() {
+        try {
+            const now = new Date();
+            const d = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()}`;
+            const r = await fetch(`https://api.aladhan.com/v1/timings/${d}?latitude=${S.lat}&longitude=${S.lon}&method=2&shafq=1`);
+            const j = await r.json();
+            if (j.code===200) {
+                S.prayers = j.data.timings;
+                document.getElementById('hijriDate').textContent = `${j.data.date.hijri.date} ${j.data.date.hijri.month.en} ${j.data.date.hijri.year} H`;
+                renderPrayers(); updateNP();
+            }
+        } catch(e) { document.getElementById('prayerGrid').innerHTML='<div class="empty"><p style="color:var(--red)">Gagal memuat jadwal</p></div>'; }
+    }
+
+    function renderPrayers() {
+        const keys=['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
+        const now=new Date(), nm=now.getHours()*60+now.getMinutes();
+        document.getElementById('prayerGrid').innerHTML = keys.map(k => {
+            const t=S.prayers[k].substring(0,5); const [h,m]=t.split(':').map(Number); const pm=h*60+m;
+            const active=isNext(k); const passed=pm<nm&&!active;
+            return `<div class="p-item${active?' active':''}${passed?' passed':''}">
+                <div class="p-icon">${P_ICONS[k]}</div><div class="p-name">${P_NAMES[k]}</div><div class="p-time">${t}</div></div>`;
+        }).join('');
+    }
+
+    function isNext(k) {
+        const keys=['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
+        const nm=new Date().getHours()*60+new Date().getMinutes();
+        for (const p of keys) { const [h,m]=S.prayers[p].substring(0,5).split(':').map(Number); if (h*60+m>nm) return p===k; }
+        return k==='Fajr';
+    }
+
+    // ─── SUGGEST EVENT ────────────────────────────────
+    function openSuggestEvent() {
+        // Populate mosque dropdown
+        const sel = document.getElementById('suggestEventMosque');
+        sel.innerHTML = '<option value="">-- Pilih Masjid --</option>';
+        S.mosques.forEach(m => {
+            if (m.source !== 'osm') {
+                sel.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+            }
+        });
+        // Reset form
+        document.getElementById('suggestEventTitle').value = '';
+        document.getElementById('suggestEventDesc').value = '';
+        document.getElementById('suggestEventDate').value = '';
+        document.getElementById('suggestEventTime').value = '';
+        document.getElementById('suggestEventName').value = '';
+        showModal('suggestEventModal');
+    }
+
+    async function submitSuggestEvent() {
+        const mosqueId = document.getElementById('suggestEventMosque').value;
+        const title = document.getElementById('suggestEventTitle').value.trim();
+        if (!title) return alert('Judul kegiatan wajib diisi');
+
+        const sel = document.getElementById('suggestEventMosque');
+        const mosqueName = sel.options[sel.selectedIndex]?.textContent || '';
+
+        const data = {
+            mosque_id: mosqueId || null,
+            mosque_name: mosqueName,
+            title: title,
+            description: document.getElementById('suggestEventDesc').value.trim(),
+            event_type: document.getElementById('suggestEventType').value,
+            event_date: document.getElementById('suggestEventDate').value,
+            event_time: document.getElementById('suggestEventTime').value,
+            suggester_name: document.getElementById('suggestEventName').value.trim() || 'Anonim'
+        };
+
+        try {
+            const r = await fetch('/api/suggest-event', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const j = await r.json();
+            if (j.success) {
+                hideModal('suggestEventModal');
+                alert(j.message || 'Terima kasih! Kegiatan akan diverifikasi.');
+            } else {
+                alert(j.error || 'Gagal mengirim');
+            }
+        } catch(e) {
+            alert('Gagal mengirim laporan');
+        }
+    }
+
+    // ─── DAILY WISDOM (AYAT/HADITH) ───────────────────
+    const WISDOMS = [
+        {type:'Ayat',text:'"Sesungguhnya sesudah kesulitan itu ada kemudahan."',source:'QS. Al-Insyirah: 6'},
+        {type:'Ayat',text:'"Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya."',source:'QS. Al-Baqarah: 286'},
+        {type:'Ayat',text:'"Maka sesungguhnya bersama kesulitan ada kemudahan."',source:'QS. Al-Insyirah: 5'},
+        {type:'Ayat',text:'"Dan apabila hamba-hamba-Ku bertanya kepadamu tentang Aku, maka (jawablah) bahwasanya Aku adalah dekat."',source:'QS. Al-Baqarah: 186'},
+        {type:'Ayat',text:'"Berdoalah kepada-Ku, niscaya akan Kuperkenankan bagimu."',source:'QS. Al-Mukmin: 60'},
+        {type:'Ayat',text:'"Sesungguhnya Allah beserta orang-orang yang sabar."',source:'QS. Al-Baqarah: 153'},
+        {type:'Ayat',text:'"Dan bertawakallah kepada Allah. Cukuplah Allah sebagai Penolong."',source:'QS. Al-Ahzab: 3'},
+        {type:'Ayat',text:'"Janganlah kamu berputus asa dari rahmat Allah."',source:'QS. Az-Zumar: 53'},
+        {type:'Hadith',text:'"Islam dibangun di atas lima perkara: syahadat, mendirikan sholat, menunaikan zakat, berpuasa Ramadan, dan haji."',source:'HR. Bukhari-Muslim'},
+        {type:'Hadith',text:'"Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lainnya."',source:'HR. Ahmad'},
+        {type:'Hadith',text:'"Sesungguhnya amal itu tergantung niatnya."',source:'HR. Bukhari-Muslim'},
+        {type:'Hadith',text:'"Tidak sempurna iman seseorang hingga ia mencintai saudaranya sebagaimana ia mencintai dirinya sendiri."',source:'HR. Bukhari-Muslim'},
+        {type:'Hadith',text:'"Barangsiapa yang tidak mengasih maka tidak akan dikasihi."',source:'HR. Bukhari'},
+        {type:'Hadith',text:'"Dunia adalah penjara bagi mukmin dan surga bagi kafir."',source:'HR. Muslim'},
+        {type:'Hadith',text:'"Muslim yang kuat lebih baik dan lebih dicintai Allah daripada Muslim yang lemah."',source:'HR. Muslim'},
+        {type:'Hadith',text:'"Janganlah kalian saling mendengki, saling membenci, saling membelakangi. Jadilah kalian hamba-hamba Allah yang bersaudara."',source:'HR. Muslim'},
+    ];
+
+    function showWisdom() {
+        // Pick based on day so it changes daily but stays consistent within a day
+        const dayIdx = new Date().getDate() % WISDOMS.length;
+        const w = WISDOMS[dayIdx];
+        document.getElementById('wisdomType').textContent = w.type === 'Ayat' ? '📖 Ayat Hari Ini' : '🕌 Hadith Hari Ini';
+        document.getElementById('wisdomText').textContent = w.text;
+        document.getElementById('wisdomSource').textContent = '— ' + w.source;
+    }
+
+    function refreshWisdom() {
+        // Random on tap
+        const w = WISDOMS[Math.floor(Math.random() * WISDOMS.length)];
+        document.getElementById('wisdomType').textContent = w.type === 'Ayat' ? '📖 Ayat Hari Ini' : '🕌 Hadith Hari Ini';
+        document.getElementById('wisdomText').textContent = w.text;
+        document.getElementById('wisdomSource').textContent = '— ' + w.source;
+    }
+
+    // ─── TASBIH DIGITAL ───────────────────────────────
+    const DHIKRS = [
+        {name:'Subhanallah', target:33},
+        {name:'Alhamdulillah', target:33},
+        {name:'Allahu Akbar', target:33},
+        {name:'Astaghfirullah', target:100},
+        {name:'La ilaha illallah', target:100},
+        {name:'Subhanallah wa bihamdihi', target:100},
+        {name:'Hasbunallah wa ni\'mal wakil', target:100},
+    ];
+    let tasbihIdx = 0, tasbihCounter = 0, tasbihTargetVal = 33;
+
+    function tasbihTap() {
+        if (tasbihCounter >= tasbihTargetVal) return; // Don't count beyond target
+        tasbihCounter++;
+        if (navigator.vibrate) navigator.vibrate(30);
+        updateTasbihUI();
+        if (tasbihCounter >= tasbihTargetVal) {
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+            // Auto reset after target reached
+            setTimeout(() => {
+                tasbihCounter = 0;
+                updateTasbihUI();
+            }, 1500);
+        }
+    }
+
+    function tasbihReset() {
+        tasbihCounter = 0;
+        updateTasbihUI();
+    }
+
+    function tasbihTarget() {
+        const val = prompt('Set target (angka):', tasbihTargetVal);
+        if (val && !isNaN(val) && parseInt(val) > 0) {
+            tasbihTargetVal = parseInt(val);
+            updateTasbihUI();
+        }
+    }
+
+    function setTasbihTarget(n) {
+        tasbihTargetVal = n;
+        tasbihCounter = 0;
+        updateTasbihUI();
+    }
+
+    function tasbihDhikr() {
+        tasbihIdx = (tasbihIdx + 1) % DHIKRS.length;
+        tasbihCounter = 0;
+        tasbihTargetVal = DHIKRS[tasbihIdx].target;
+        updateTasbihUI();
+    }
+
+    function updateTasbihUI() {
+        document.getElementById('tasbihCount').textContent = tasbihCounter;
+        document.getElementById('tasbihLabel').textContent = DHIKRS[tasbihIdx].name;
+        document.getElementById('tasbihTarget').textContent = `Target: ${tasbihTargetVal}`;
+        const pct = Math.min(100, (tasbihCounter / tasbihTargetVal) * 100);
+        document.getElementById('tasbihProgress').style.width = pct + '%';
+    }
+
+    // Allow tap anywhere in the modal to count
+    document.getElementById('tasbihModal')?.addEventListener('click', e => {
+        if (e.target.closest('.modal-close') || e.target.closest('.btn') ||
+            e.target.closest('#tasbihQuickTarget') || e.target.closest('.modal-handle')) return;
+        tasbihTap();
+    });
+
+    // ─── WEEKLY PRAYER SCHEDULE ────────────────────────
+    let weeklyLoaded = false;
+    function toggleWeekly() {
+        const wrap = document.getElementById('weeklyWrap');
+        const btn = document.getElementById('btnWeekly');
+        if (wrap.style.display === 'none') {
+            wrap.style.display = 'block';
+            btn.textContent = '📅 Jadwal Mingguan ▴';
+            if (!weeklyLoaded) fetchWeeklyPrayers();
+        } else {
+            wrap.style.display = 'none';
+            btn.textContent = '📅 Jadwal Mingguan ▾';
+        }
+    }
+
+    async function fetchWeeklyPrayers() {
+        const grid = document.getElementById('weeklyGrid');
+        grid.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat...</div>';
+        try {
+            const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+            const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+            const promises = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() + i);
+                const ds = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+                promises.push(
+                    fetch(`https://api.aladhan.com/v1/timings/${ds}?latitude=${S.lat}&longitude=${S.lon}&method=2&shafq=1`)
+                        .then(r => r.json())
+                        .then(j => ({date: d, data: j.data.timings, hijri: j.data.date.hijri}))
+                );
+            }
+            const results = await Promise.all(promises);
+            const keys = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+            const shortNames = {'Fajr':'Subuh','Dhuhr':'Dzuhur','Asr':'Ashar','Maghrib':'Maghrib','Isha':'Isya'};
+            let html = '<table style="width:100%;border-collapse:collapse;text-align:center">';
+            html += '<tr style="border-bottom:1px solid var(--bor)"><td style="padding:8px 4px;font-weight:600;color:var(--txt-d)">Hari</td>';
+            keys.forEach(k => html += `<td style="padding:8px 2px;font-weight:600;color:var(--txt-d)">${shortNames[k]}</td>`);
+            html += '</tr>';
+            results.forEach((r, i) => {
+                const isToday = i === 0;
+                const dayName = days[r.date.getDay()];
+                const dateStr = `${r.date.getDate()} ${months[r.date.getMonth()]}`;
+                const bg = isToday ? 'background:var(--acc-d);font-weight:600' : '';
+                html += `<tr style="border-bottom:1px solid var(--bor);${bg}">`;
+                html += `<td style="padding:8px 4px;white-space:nowrap">${isToday ? '📍 ' : ''}${dayName}<br><small style="color:var(--txt-d)">${dateStr}</small></td>`;
+                keys.forEach(k => {
+                    const t = r.data[k] ? r.data[k].substring(0,5) : '-';
+                    html += `<td style="padding:8px 2px">${t}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</table>';
+            html += `<div style="text-align:center;margin-top:8px;font-size:11px;color:var(--txt-d)">Metode: Kemenag RI · Zona: WIB</div>`;
+            grid.innerHTML = html;
+            weeklyLoaded = true;
+        } catch(e) {
+            grid.innerHTML = '<div class="empty"><p style="color:var(--red)">Gagal memuat jadwal mingguan</p></div>';
+        }
+    }
+
+    function getNP() {
+        if (!S.prayers) return null;
+        const keys=['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
+        const nm=new Date().getHours()*60+new Date().getMinutes();
+        for (const p of keys) { const [h,m]=S.prayers[p].substring(0,5).split(':').map(Number); const pm=h*60+m; if (pm>nm) return {name:p,time:S.prayers[p].substring(0,5),min:pm}; }
+        const [h,m]=S.prayers.Fajr.substring(0,5).split(':').map(Number); return {name:'Fajr',time:S.prayers.Fajr.substring(0,5),min:h*60+m+1440};
+    }
+
+    function updateNP() { const n=getNP(); if(!n) return; document.getElementById('npName').textContent=P_NAMES[n.name]; document.getElementById('npTime').textContent=n.time; }
+    const IQOMAH_MINUTES = 15; // Default minutes after azan for iqomah
+    let iqomahActive = false, iqomahPrayer = '';
+
+    function updateCD() {
+        const now = new Date();
+        const nm = now.getHours() * 60 + now.getMinutes();
+        const ns = now.getSeconds();
+        const keys = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
+
+        // ── IQOMAH CHECK ──
+        // Check if we're within IQOMAH_MINUTES after any prayer time
+        iqomahActive = false;
+        for (const k of keys) {
+            if (k === 'Sunrise') continue;
+            const [ph, pm] = S.prayers[k].substring(0,5).split(':').map(Number);
+            const prayerMin = ph * 60 + pm;
+            const diffMin = nm - prayerMin;
+            if (diffMin >= 0 && diffMin < IQOMAH_MINUTES) {
+                iqomahActive = true;
+                iqomahPrayer = k;
+                const iqomahSec = (IQOMAH_MINUTES * 60) - (nm * 60 + ns - prayerMin * 60);
+                const iH = Math.floor(iqomahSec / 3600);
+                const iM = Math.floor((iqomahSec % 3600) / 60);
+                const iS = Math.floor(iqomahSec % 60);
+                document.getElementById('npName').textContent = `Menuju Iqomah`;
+                document.getElementById('npTime').textContent = P_NAMES[k];
+                document.getElementById('countdown').textContent = `${String(iM).padStart(2,'0')}:${String(iS).padStart(2,'0')}`;
+                document.getElementById('countdown').style.color = '#f59e0b';
+                const bar = document.getElementById('cdProgressBar');
+                const iqPct = 100 - (diffMin / IQOMAH_MINUTES * 100);
+                bar.style.width = iqPct + '%';
+                bar.className = 'cd-progress-bar warn';
+                document.getElementById('cdPrev').innerHTML = `🕌 Azan ${P_NAMES[k]} telah dikumandangkan · Iqomah ${IQOMAH_MINUTES}m setelah azan`;
+                return;
+            }
+        }
+
+        // Reset countdown color if not in iqomah mode
+        document.getElementById('countdown').style.color = '';
+
+        // ── NORMAL COUNTDOWN ──
+        const n = getNP();
+        if (!n) return;
+        let d = n.min * 60 - (nm * 60 + ns);
+        if (d < 0) d += 86400;
+        const H = Math.floor(d / 3600), M = Math.floor((d % 3600) / 60), S2 = Math.floor(d % 60);
+        document.getElementById('countdown').textContent = `${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(S2).padStart(2,'0')}`;
+        document.getElementById('npName').textContent = P_NAMES[n.name];
+        document.getElementById('npTime').textContent = n.time;
+
+        // Progress bar: % of time elapsed since previous prayer
+        const prevIdx = keys.indexOf(n.name) - 1;
+        let prevMin = 0;
+        if (prevIdx >= 0) {
+            const [ph, pm] = S.prayers[keys[prevIdx]].substring(0,5).split(':').map(Number);
+            prevMin = ph * 60 + pm;
+        } else {
+            const [ph, pm] = S.prayers.Isha.substring(0,5).split(':').map(Number);
+            prevMin = ph * 60 + pm - 1440;
+        }
+        let totalSpan = n.min - prevMin;
+        if (totalSpan <= 0) totalSpan += 1440;
+        const elapsed = nm - prevMin;
+        let pct = Math.max(0, Math.min(100, (elapsed / totalSpan) * 100));
+
+        const bar = document.getElementById('cdProgressBar');
+        bar.style.width = pct + '%';
+        bar.className = 'cd-progress-bar' + (pct > 85 ? ' urgent' : pct > 65 ? ' warn' : '');
+
+        // Previous prayer info
+        const prevName = prevIdx >= 0 ? P_NAMES[keys[prevIdx]] : P_NAMES.Isha;
+        const totalMin = Math.floor(d / 60);
+        let timeLabel = '';
+        if (totalMin >= 60) {
+            const hrs = Math.floor(totalMin / 60);
+            const mins = totalMin % 60;
+            timeLabel = `${hrs}j ${mins}m lagi`;
+        } else {
+            timeLabel = `${totalMin}m ${S2}s lagi`;
+        }
+        document.getElementById('cdPrev').innerHTML =
+            `✅ ${prevName} telah lewat · ${timeLabel}`;
+    }
+
+    // ─── ADHAN & REMINDER SYSTEM ───────────────────────
+    const REMINDER_MINUTES = [10, 5]; // minutes before prayer
+    let notifPermission = 'default';
+    let reminderPlayed = {}; // track: "Fajr_10", "Fajr_5", etc.
+
+    // Request notification permission on init
+    function requestNotifPermission() {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'granted') {
+            notifPermission = 'granted';
+            return;
+        }
+        if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(p => {
+                notifPermission = p;
+                if (p === 'granted') {
+                    showNotif('✅ Notifikasi Aktif', 'Anda akan menerima pengingat waktu sholat', '🕌');
+                }
+            });
+        }
+    }
+
+    // Send system notification (works even when tab is in background)
+    function sendNotification(title, body, icon = '🕌', tag = 'sholatku') {
+        if (notifPermission !== 'granted') return;
+        try {
+            const n = new Notification(title, {
+                body: body,
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>',
+                tag: tag,
+                requireInteraction: true,
+                silent: false
+            });
+            n.onclick = () => { window.focus(); n.close(); };
+            // Auto close after 30 seconds
+            setTimeout(() => n.close(), 30000);
+        } catch(e) {
+            // Fallback for mobile browsers that don't support Notification constructor
+            console.log('Notification fallback:', title, body);
+        }
+    }
+
+    // Main check function - runs every 15 seconds
+    function checkAdhan() {
+        if (!S.prayers) return;
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const prayerKeys = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+        for (const k of prayerKeys) {
+            const [h, m] = S.prayers[k].substring(0, 5).split(':').map(Number);
+            const prayerMin = h * 60 + m;
+            const diff = prayerMin - currentMinutes;
+
+            // ── PRE-PRAYER REMINDERS (10 & 5 min before) ──
+            if (k !== 'Sunrise') { // Don't remind for Sunrise
+                for (const remindMin of REMINDER_MINUTES) {
+                    const reminderKey = `${k}_${remindMin}`;
+                    const todayKey = `${now.getDate()}_${reminderKey}`;
+
+                    if (diff === remindMin && !reminderPlayed[todayKey]) {
+                        reminderPlayed[todayKey] = true;
+                        const title = `⏰ ${remindMin} menit lagi`;
+                        const body = `Waktu ${P_NAMES[k]} pukul ${S.prayers[k].substring(0, 5)}`;
+                        sendNotification(title, body, '⏰', `reminder_${reminderKey}`);
+                        showInAppNotif(`⏰ ${remindMin} menit lagi`, body, 'reminder');
+                        playReminderSound();
+                    }
+                }
+            }
+
+            // ── ADHAN TIME (exact prayer time) ──
+            const hm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const adhanKey = `${k}_${now.getDate()}`;
+
+            if (S.prayers[k].substring(0, 5) === hm && !S.adhanPlayed[adhanKey]) {
+                S.adhanPlayed[adhanKey] = true;
+                const title = `🕌 Waktu ${P_NAMES[k]}`;
+                const body = `Sudah masuk waktu sholat ${P_NAMES[k]}`;
+                sendNotification(title, body, '🕌', `adhan_${k}`);
+                showAdhan(P_NAMES[k]);
+                playAdhanSound();
+            }
+        }
+    }
+
+    function showAdhan(name) {
+        document.getElementById('adhanTitle').textContent = `Waktu ${name}`;
+        document.getElementById('adhanPopup').classList.add('show');
+    }
+
+    function dismissAdhan() {
+        document.getElementById('adhanPopup').classList.remove('show');
+    }
+
+    // In-app notification banner (bottom of screen)
+    function showInAppNotif(title, body, type = 'adhan') {
+        const existing = document.getElementById('inAppNotif');
+        if (existing) existing.remove();
+
+        const colors = {
+            adhan: 'var(--acc)',
+            reminder: 'var(--gold)'
+        };
+
+        const div = document.createElement('div');
+        div.id = 'inAppNotif';
+        div.style.cssText = `
+            position:fixed; bottom:80px; left:16px; right:16px; max-width:448px;
+            margin:0 auto; background:var(--card); border:2px solid ${colors[type]};
+            border-radius:16px; padding:14px 16px; z-index:250;
+            box-shadow:0 8px 32px rgba(0,0,0,.4); animation:slideUp .3s ease-out;
+            display:flex; align-items:center; gap:12px; cursor:pointer;
+        `;
+        div.innerHTML = `
+            <span style="font-size:28px">${type==='reminder'?'⏰':'🕌'}</span>
+            <div style="flex:1">
+                <div style="font-weight:700;font-size:15px">${title}</div>
+                <div style="font-size:13px;color:var(--txt-d)">${body}</div>
+            </div>
+            <span style="color:var(--txt-m);font-size:18px" onclick="this.parentElement.remove()">✕</span>
+        `;
+        div.onclick = (e) => { if (e.target.textContent !== '✕') window.focus(); };
+        document.body.appendChild(div);
+
+        // Auto dismiss after 15 seconds
+        setTimeout(() => { if (document.getElementById('inAppNotif')) div.remove(); }, 15000);
+    }
+
+    // Sound: Adhan melody (longer, more dramatic)
+    function playAdhanSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            // Adhan-inspired melody
+            const notes = [
+                {f:392, d:0.5}, {f:440, d:0.5}, {f:494, d:0.5}, {f:523, d:0.8},
+                {f:587, d:0.5}, {f:523, d:0.5}, {f:494, d:0.5}, {f:440, d:0.8},
+                {f:392, d:0.5}, {f:440, d:0.5}, {f:494, d:0.5}, {f:523, d:1.0},
+            ];
+            let time = ctx.currentTime;
+            notes.forEach(n => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = n.f;
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.25, time + 0.05);
+                gain.gain.setValueAtTime(0.25, time + n.d - 0.1);
+                gain.gain.linearRampToValueAtTime(0, time + n.d);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(time);
+                osc.stop(time + n.d);
+                time += n.d;
+            });
+        } catch(e) {}
+    }
+
+    // Sound: Reminder chime (short, gentle)
+    function playReminderSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523, 659, 784]; // C-E-G chord
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
+                gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + i * 0.15 + 0.05);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + i * 0.15 + 0.4);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + i * 0.15);
+                osc.stop(ctx.currentTime + i * 0.15 + 0.5);
+            });
+        } catch(e) {}
+    }
+
+    // ─── DATE ──────────────────────────────────────────
+    function updateDate() {
+        const now=new Date(), days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
+        months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        document.getElementById('gregDate').textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
+
+    // ─── QIBLA ────────────────────────────────────────
+    let compassMode = 'static'; // 'static' or 'live'
+
+    function calcQibla() {
+        const lk=21.4225*Math.PI/180, lnk=39.8262*Math.PI/180, lu=S.lat*Math.PI/180, lnu=S.lon*Math.PI/180;
+        const dl=lnk-lnu, x=Math.sin(dl), y=Math.cos(lu)*Math.tan(lk)-Math.sin(lu)*Math.cos(dl);
+        let a=Math.atan2(x,y)*180/Math.PI; if(a<0) a+=360;
+        S.qibla=a;
+        document.getElementById('qiblaDir').textContent=`${a.toFixed(1)}°`;
+        document.getElementById('qiblaDetail').textContent=`Dari ${S.city} ke Ka'bah, Mekah`;
+
+        // In static mode: rotate needle to point at Qibla
+        if (compassMode === 'static') {
+            document.getElementById('compassNeedle').style.transform=`translate(-50%,-100%) rotate(${a}deg)`;
+        }
+        // In live mode: place Ka'bah marker on dial edge
+        positionKabahMarker();
+    }
+
+    // Place Ka'bah icon on the compass dial edge at Qibla angle
+    function positionKabahMarker() {
+        const dial = document.getElementById('compassDial');
+        const kabah = document.getElementById('compassKabah');
+        if (!dial || !kabah) return;
+
+        const r = 85; // radius from center
+        const rad = S.qibla * Math.PI / 180;
+        const cx = 110 + r * Math.sin(rad); // 110 = center (220/2)
+        const cy = 110 - r * Math.cos(rad);
+        kabah.style.left = cx + 'px';
+        kabah.style.top = cy + 'px';
+        kabah.style.transform = 'translate(-50%, -50%)';
+        kabah.style.display = 'block';
+    }
+
+    // ─── LIVE COMPASS ─────────────────────────────────
+    async function startCompass() {
+        // iOS requires explicit permission
+        if (typeof DeviceOrientationEvent !== 'undefined' &&
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            try {
+                const perm = await DeviceOrientationEvent.requestPermission();
+                if (perm !== 'granted') {
+                    setCompassStatus('static', 'Izin ditolak — kompas statis');
+                    return;
+                }
+            } catch(e) {
+                setCompassStatus('static', 'Gagal minta izin — kompas statis');
+                return;
+            }
+        }
+
+        // Check if deviceorientation actually works
+        let gotEvent = false;
+        const testHandler = (e) => {
+            if (e.alpha !== null && e.alpha !== undefined) gotEvent = true;
+        };
+        window.addEventListener('deviceorientation', testHandler, {once: false});
+
+        // Wait 1.5s to see if we get events
+        await new Promise(r => setTimeout(r, 1500));
+        window.removeEventListener('deviceorientation', testHandler);
+
+        if (!gotEvent) {
+            setCompassStatus('static', 'Device tidak mendukung kompas');
+            return;
+        }
+
+        // Start listening (absolute=true for Android magnetometer accuracy)
+        window.addEventListener('deviceorientation', onDeviceOrientation, true);
+        try {
+            window.addEventListener('deviceorientationabsolute', onDeviceOrientation, true);
+        } catch(e) {} // Not all browsers support this
+        compassMode = 'live';
+        setCompassStatus('live', 'Kompas aktif');
+        document.getElementById('btnCalibrate').style.display = 'inline-block';
+
+        // Switch needle to straight up (Kabah marker shows direction)
+        document.getElementById('compassNeedle').style.transform = 'translate(-50%,-100%) rotate(0deg)';
+        positionKabahMarker();
+    }
+
+    function onDeviceOrientation(e) {
+        // Get compass heading — different APIs per browser/device
+        let heading = 0;
+
+        if (e.webkitCompassHeading !== undefined) {
+            // iOS Safari — most accurate, uses magnetometer directly
+            heading = e.webkitCompassHeading;
+        } else if (e.alpha !== null) {
+            // Android Chrome — alpha is heading from North
+            // But some devices report it reversed, so we check absolute
+            heading = 360 - e.alpha; // alpha=0 means facing North, counter-clockwise
+            if (heading >= 360) heading -= 360;
+        } else {
+            return; // no compass data
+        }
+
+        // Smooth out jitter (moving average of last 3 readings)
+        if (!S._headingHistory) S._headingHistory = [];
+        S._headingHistory.push(heading);
+        if (S._headingHistory.length > 3) S._headingHistory.shift();
+        const avg = S._headingHistory.reduce((a,b) => a+b, 0) / S._headingHistory.length;
+
+        // Rotate the entire dial so North aligns with device top
+        const dial = document.getElementById('compassDial');
+        dial.style.transform = `rotate(${-avg}deg)`;
+
+        // Update heading display
+        const dirs = ['U','UT','T','TS','S','SB','B','BU'];
+        const dirIdx = Math.round(avg / 45) % 8;
+        const headingText = `${Math.round(avg)}° ${dirs[dirIdx]}`;
+        document.getElementById('qiblaDetail').textContent =
+            `Heading: ${headingText} | Kiblat: ${S.qibla.toFixed(1)}° dari Utara`;
+    }
+
+    function calibrateCompass() {
+        // Reset heading history to clear bad readings
+        S._headingHistory = [];
+        setCompassStatus('live', 'Kalibrasi... gerakkan HP membentuk angka 8');
+
+        // Show calibration hint for 3 seconds
+        setTimeout(() => {
+            if (compassMode === 'live') {
+                setCompassStatus('live', 'Kompas aktif');
+            }
+        }, 3000);
+
+        // If compass was not started yet, start it
+        if (compassMode === 'static') {
+            startCompass();
+        }
+    }
+
+    function setCompassStatus(mode, text) {
+        const el = document.getElementById('compassStatus');
+        const txt = document.getElementById('compassStatusText');
+        el.className = `compass-status ${mode}`;
+        el.querySelector('span:first-child').textContent = mode === 'live' ? '🟢' : '📍';
+        txt.textContent = text;
+    }
+
+    // Auto-start compass when Qibla tab is shown
+    document.querySelector('[data-tab="tabQibla"]')?.addEventListener('click', () => {
+        if (compassMode === 'static') {
+            // Try to start live compass on first visit
+            if (typeof DeviceOrientationEvent !== 'undefined' &&
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // iOS — show permission button
+                document.getElementById('btnCalibrate').style.display = 'inline-block';
+                document.getElementById('btnCalibrate').textContent = '🔄 Aktifkan Kompas';
+            } else if (typeof DeviceOrientationEvent !== 'undefined') {
+                // Android — try auto-start
+                startCompass();
+            }
+        }
+    });
+
+    // ─── API: MOSQUES ──────────────────────────────────
+    async function fetchMosquesAPI() {
+        try {
+            // Fetch from both DB and OSM in parallel
+            const [dbResp, osmResp] = await Promise.all([
+                fetch(`/api/mosques?lat=${S.lat}&lon=${S.lon}&radius=5000`),
+                fetch(`/api/osm-mosques?lat=${S.lat}&lon=${S.lon}&radius=5000`)
+            ]);
+
+            const dbMosques = await dbResp.json();
+            let osmMosques = [];
+            try { osmMosques = await osmResp.json(); } catch(e) {}
+
+            // Merge: DB mosques first, then OSM (deduplicate by proximity)
+            const allMosques = [...dbMosques];
+            for (const om of (osmMosques.result || osmMosques)) {
+                if (!om.lat || !om.lon) continue;
+                // Check if already in DB (within 100m)
+                const isDuplicate = dbMosques.some(dm => getDist(dm.lat, dm.lon, om.lat, om.lon) < 100);
+                if (!isDuplicate) allMosques.push(om);
+            }
+
+            allMosques.sort((a, b) => a.distance - b.distance);
+            S.mosques = allMosques;
+            renderMosques();
+            calcQibla();
+        } catch(e) {
+            console.error('Fetch mosques error:', e);
+        }
+    }
+
+    function getDist(lat1, lon1, lat2, lon2) {
+        const R = 6371000, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function renderMosques() {
+        const mk = m => `
+            <div class="card" onclick="${m.source==='osm'?'showOSMMosqueDetail':'showMosqueDetail'}('${m.id}')">
+                <div class="card-row">
+                    <div class="card-icon">🕌</div>
+                    <div class="card-body">
+                        <div class="card-title">${m.name}</div>
+                        <div class="card-sub">${m.address||'-'}</div>
+                        <div class="card-meta">
+                            <span class="dist">📍 ${m.distance<1000?m.distance+'m':(m.distance/1000).toFixed(1)+'km'}</span>
+                            ${m.avg_rating?`<span class="stars">${'★'.repeat(Math.round(m.avg_rating))}${'☆'.repeat(5-Math.round(m.avg_rating))}</span><span style="color:var(--txt-d)">${m.avg_rating} (${m.review_count})</span>`:''}
+                            ${m.source==='osm'?'<span class="badge badge-acc" style="font-size:10px">OSM</span>':''}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        const count = S.mosques.length;
+        document.getElementById('mosquePreview').innerHTML = S.mosques.slice(0,3).map(mk).join('') || '<div class="empty"><p>Tidak ada masjid ditemukan</p></div>';
+        document.getElementById('mosqueList').innerHTML = S.mosques.map(mk).join('') || '<div class="empty"><p>Tidak ada masjid ditemukan. Coba geser lokasi atau perbesar radius.</p></div>';
+        if (document.getElementById('mosqueCount')) {
+            document.getElementById('mosqueCount').textContent = `${count} masjid ditemukan dalam radius 5km`;
+        }
+    }
+
+    function showOSMMosqueDetail(id) {
+        // For OSM mosques, show basic info since we don't have DB data
+        const m = S.mosques.find(x => x.id === id);
+        if (!m) return;
+        const c = document.getElementById('mosqueDetailContent');
+        c.innerHTML = `
+            <div class="modal-handle"></div>
+            <button class="modal-close" onclick="hideModal('mosqueDetailModal')">✕</button>
+            <h2 style="margin-bottom:4px">${m.name}</h2>
+            <p style="font-size:13px;color:var(--txt-d);margin-bottom:12px">📍 ${m.address||'-'}</p>
+            <div style="background:var(--card);padding:14px;border-radius:12px;margin-bottom:16px;font-size:13px">
+                <p>Data masjid dari OpenStreetMap. Belum ada review atau kegiatan.</p>
+                <p style="margin-top:8px;color:var(--txt-d)">Jarak: ${m.distance<1000?m.distance+'m':(m.distance/1000).toFixed(1)+'km'}</p>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:16px">
+                <a href="https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lon}" target="_blank" class="btn btn-acc" style="text-decoration:none;text-align:center;flex:1">🗺️ Navigasi</a>
+                <button class="btn btn-ghost" style="flex:1" onclick="hideModal('mosqueDetailModal')">Tutup</button>
+            </div>
+            <div style="background:var(--acc-d);padding:12px;border-radius:12px;font-size:12px;color:var(--acc)">
+                💡 Masjid ini dari OpenStreetMap. Untuk menambahkan info lengkap (foto, kegiatan, review), DKM bisa mendaftar.
+            </div>`;
+        showModal('mosqueDetailModal');
+    }
+
+    async function showMosqueDetail(id) {
+        showModal('mosqueDetailModal');
+        const c = document.getElementById('mosqueDetailContent');
+        c.innerHTML = '<div class="modal-handle"></div><div class="loading"><div class="spinner"></div>Memuat...</div>';
+        try {
+            const r = await fetch(`/api/mosques/${id}`);
+            const m = await r.json();
+            c.innerHTML = `
+                <div class="modal-handle"></div>
+                <button class="modal-close" onclick="hideModal('mosqueDetailModal')">✕</button>
+                <h2 style="margin-bottom:4px">${m.name}</h2>
+                <p style="font-size:13px;color:var(--txt-d);margin-bottom:12px">📍 ${m.address||'-'}</p>
+                ${m.avg_rating?`<div style="margin-bottom:12px"><span class="stars" style="font-size:16px">${'★'.repeat(Math.round(m.avg_rating))}${'☆'.repeat(5-Math.round(m.avg_rating))}</span> <span style="color:var(--txt-d)">${m.avg_rating}/5 (${m.review_count} ulasan)</span></div>`:''}
+                ${m.description?`<p style="font-size:13px;margin-bottom:12px">${m.description}</p>`:''}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+                    ${m.imam_name?`<div style="background:var(--card);padding:10px;border-radius:10px;font-size:12px"><strong>Imam:</strong><br>${m.imam_name}</div>`:''}
+                    ${m.capacity?`<div style="background:var(--card);padding:10px;border-radius:10px;font-size:12px"><strong>Kapasitas:</strong><br>${m.capacity} jamaah</div>`:''}
+                    ${m.phone?`<div style="background:var(--card);padding:10px;border-radius:10px;font-size:12px"><strong>Telp:</strong><br>${m.phone}</div>`:''}
+                </div>
+                ${m.facilities?`<div style="margin-bottom:16px"><strong style="font-size:13px">Fasilitas:</strong><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${m.facilities.split(',').map(f=>`<span class="badge badge-acc">${f.trim()}</span>`).join('')}</div></div>`:''}
+
+                <div style="display:flex;gap:8px;margin-bottom:16px">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lon}" target="_blank" class="btn btn-acc" style="text-decoration:none;text-align:center;flex:1">🗺️ Navigasi</a>
+                    <button class="btn btn-ghost" style="flex:1" onclick="openReviewModal(${m.id})">⭐ Ulasan</button>
+                    <button class="btn btn-ghost" style="flex:1" onclick="openDonateModal(${m.id},'${m.name.replace(/'/g,"\\'")}')">💝 Donasi</button>
+                </div>
+
+                ${m.events.length?`<h3 style="font-size:14px;margin-bottom:8px">📅 Kegiatan</h3>${m.events.map(e=>`
+                    <div class="card" style="cursor:default">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                            <span class="badge badge-gold">${e.event_type||'Kegiatan'}</span>
+                            <span style="font-size:12px;color:var(--txt-d)">${e.event_date} ${e.event_time}</span>
+                        </div>
+                        <div class="card-title">${e.title}</div>
+                        ${e.description?`<div class="card-sub">${e.description}</div>`:''}
+                    </div>`).join('')}`:''}
+
+                ${m.reviews.length?`<h3 style="font-size:14px;margin:16px 0 8px">⭐ Ulasan (${m.review_count})</h3>${m.reviews.map(r=>`
+                    <div class="card" style="cursor:default">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                            <strong style="font-size:13px">${r.user_name}</strong>
+                            <span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+                        </div>
+                        ${r.comment?`<p style="font-size:13px;color:var(--txt-d)">${r.comment}</p>`:''}
+                    </div>`).join('')}`:''}
+            `;
+        } catch(e) { c.innerHTML = '<div class="modal-handle"></div><p style="color:var(--red)">Gagal memuat</p>'; }
+    }
+
+    // ─── API: EVENTS ───────────────────────────────────
+    async function fetchEventsAPI() {
+        try {
+            const r = await fetch(`/api/events?lat=${S.lat}&lon=${S.lon}`);
+            S.events = await r.json();
+            renderEvents();
+        } catch(e) {}
+    }
+
+    function renderEvents() {
+        const mk = e => `
+            <div class="card" onclick="showEventDetail(${e.mosque_id}, '${e.title.replace(/'/g,"\\'")}', '${e.event_type||''}', '${e.event_date||''}', '${e.event_time||''}', '${(e.description||'').replace(/'/g,"\\'")}', '${e.mosque_name.replace(/'/g,"\\'")}', ${e.distance})">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                    <span class="badge badge-gold">${E_TYPES[e.event_type]||'📌'} ${e.event_type||'Kegiatan'}</span>
+                    <span style="font-size:12px;color:var(--txt-d)">${e.event_date} ${e.event_time}</span>
+                </div>
+                <div class="card-title">${e.title}</div>
+                <div class="card-sub">📍 ${e.mosque_name} · ${e.distance<1000?e.distance+'m':(e.distance/1000).toFixed(1)+'km'}</div>
+                ${e.description?`<p style="font-size:12px;color:var(--txt-d);margin-top:4px">${e.description}</p>`:''}
+            </div>`;
+
+        document.getElementById('eventPreview').innerHTML = S.events.slice(0,3).map(mk).join('') || '<div class="empty"><p>Belum ada kegiatan</p></div>';
+        document.getElementById('eventList').innerHTML = S.events.map(mk).join('') || '<div class="empty"><p>Belum ada kegiatan terjadwal</p></div>';
+    }
+
+    // ─── EVENT DETAIL ────────────────────────────────────
+    function showEventDetail(mosqueId, title, eventType, eventDate, eventTime, desc, mosqueName, distance) {
+        const c = document.getElementById('eventDetailContent');
+        c.innerHTML = `
+            <div class="modal-handle"></div>
+            <button class="modal-close" onclick="hideModal('eventDetailModal')">✕</button>
+            <div style="margin-bottom:16px">
+                <span class="badge badge-gold" style="font-size:13px;padding:5px 14px">${E_TYPES[eventType]||'📌'} ${eventType||'Kegiatan'}</span>
+            </div>
+            <h2 style="margin-bottom:8px">${title}</h2>
+            <div style="display:flex;gap:16px;margin-bottom:16px;font-size:14px;color:var(--txt-d)">
+                <span>📅 ${eventDate}</span>
+                <span>🕐 ${eventTime}</span>
+            </div>
+            ${desc?`<div style="background:var(--card);padding:14px;border-radius:12px;margin-bottom:16px;font-size:14px;line-height:1.6">${desc}</div>`:''}
+            <div class="card" onclick="hideModal('eventDetailModal');showMosqueDetail(${mosqueId})" style="margin-bottom:16px">
+                <div class="card-row">
+                    <div class="card-icon">🕌</div>
+                    <div class="card-body">
+                        <div class="card-title">${mosqueName}</div>
+                        <div class="card-sub">📍 ${distance<1000?distance+'m':(distance/1000).toFixed(1)+'km'} dari lokasi Anda</div>
+                        <div style="font-size:12px;color:var(--acc);margin-top:4px">Klik untuk lihat detail masjid →</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="btn btn-acc" onclick="hideModal('eventDetailModal');openDonateModal(${mosqueId},'${mosqueName.replace(/'/g,"\\'")}')">💝 Donasi ke Masjid</button>
+                <button class="btn btn-ghost" onclick="hideModal('eventDetailModal')">Tutup</button>
+            </div>
+        `;
+        showModal('eventDetailModal');
+    }
+
+    // ─── REVIEWS ───────────────────────────────────────
+    function setupRating() {
+        document.querySelectorAll('#ratingStars .star').forEach(s => s.addEventListener('click', () => {
+            S.selectedRating = parseInt(s.dataset.v);
+            document.querySelectorAll('#ratingStars .star').forEach(x => x.classList.toggle('on', parseInt(x.dataset.v) <= S.selectedRating));
+        }));
+    }
+
+    function openReviewModal(mosqueId) {
+        document.getElementById('reviewMosqueId').value = mosqueId;
+        S.selectedRating = 0;
+        document.querySelectorAll('#ratingStars .star').forEach(x => x.classList.remove('on'));
+        document.getElementById('reviewName').value = '';
+        document.getElementById('reviewComment').value = '';
+        showModal('reviewModal');
+    }
+
+    async function submitReview() {
+        if (!S.selectedRating) return alert('Pilih rating dulu');
+        const data = {
+            mosque_id: parseInt(document.getElementById('reviewMosqueId').value),
+            user_name: document.getElementById('reviewName').value || 'Anonim',
+            rating: S.selectedRating,
+            comment: document.getElementById('reviewComment').value
+        };
+        try {
+            const r = await fetch('/api/reviews', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+            const j = await r.json();
+            if (j.success) { hideModal('reviewModal'); alert('Terima kasih atas ulasan Anda! ✅'); fetchMosquesAPI(); }
+        } catch(e) { alert('Gagal mengirim ulasan'); }
+    }
+
+    // ─── DONATIONS ─────────────────────────────────────
+    function setupDonateOpts() {
+        document.querySelectorAll('.donate-opt').forEach(o => o.addEventListener('click', () => {
+            document.querySelectorAll('.donate-opt').forEach(x => x.classList.remove('on'));
+            o.classList.add('on');
+            S.donateAmount = parseInt(o.dataset.v);
+            document.getElementById('donateCustom').value = '';
+        }));
+        document.getElementById('donateCustom').addEventListener('input', e => {
+            document.querySelectorAll('.donate-opt').forEach(x => x.classList.remove('on'));
+            S.donateAmount = parseInt(e.target.value) || 0;
+        });
+    }
+
+    function openDonateModal(mosqueId, mosqueName) {
+        document.getElementById('donateMosqueId').value = mosqueId;
+        document.getElementById('donateMosqueName').textContent = `Masjid: ${mosqueName}`;
+        S.donateAmount = 0;
+        document.querySelectorAll('.donate-opt').forEach(x => x.classList.remove('on'));
+        document.getElementById('donateCustom').value = '';
+        document.getElementById('donateName').value = '';
+        document.getElementById('donateMsg').value = '';
+        showModal('donateModal');
+    }
+
+    async function submitDonate() {
+        if (!S.donateAmount || S.donateAmount < 1000) return alert('Pilih nominal donasi');
+        const data = {
+            mosque_id: parseInt(document.getElementById('donateMosqueId').value),
+            donor_name: document.getElementById('donateName').value || 'Hamba Allah',
+            amount: S.donateAmount,
+            message: document.getElementById('donateMsg').value,
+            payment_method: 'transfer'
+        };
+        try {
+            const r = await fetch('/api/donations', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+            const j = await r.json();
+            if (j.success) { hideModal('donateModal'); alert(j.message || 'Terima kasih atas donasi Anda! 💝'); }
+        } catch(e) { alert('Gagal mengirim donasi'); }
+    }
+
+    // ─── PWA ───────────────────────────────────────────
+    // ─── SUGGEST MOSQUE ────────────────────────────────
+    let suggestLat = 0, suggestLon = 0;
+
+    function openSuggestModal() {
+        document.getElementById('suggestName').value = '';
+        document.getElementById('suggestAddr').value = '';
+        document.getElementById('suggestCity').value = S.city || '';
+        document.getElementById('suggestName2').value = '';
+        document.getElementById('suggestPhone').value = '';
+        document.getElementById('suggestNotes').value = '';
+        document.getElementById('suggestCoords').textContent = '';
+        suggestLat = 0; suggestLon = 0;
+        showModal('suggestModal');
+    }
+
+    function suggestGetGPS() {
+        if (!navigator.geolocation) return alert('GPS tidak didukung');
+        document.getElementById('suggestCoords').textContent = 'Mendeteksi...';
+        navigator.geolocation.getCurrentPosition(p => {
+            suggestLat = p.coords.latitude;
+            suggestLon = p.coords.longitude;
+            document.getElementById('suggestCoords').textContent = `✅ Lokasi: ${suggestLat.toFixed(6)}, ${suggestLon.toFixed(6)}`;
+            document.getElementById('suggestCoords').style.color = 'var(--acc)';
+        }, () => {
+            document.getElementById('suggestCoords').textContent = '❌ Gagal mendeteksi GPS';
+            document.getElementById('suggestCoords').style.color = 'var(--red)';
+        }, {enableHighAccuracy: true});
+    }
+
+    async function submitSuggest() {
+        const name = document.getElementById('suggestName').value.trim();
+        if (!name) return alert('Nama masjid wajib diisi');
+        if (!suggestLat || !suggestLon) return alert('Ambil lokasi GPS dulu');
+
+        const data = {
+            name: name,
+            address: document.getElementById('suggestAddr').value,
+            lat: suggestLat,
+            lon: suggestLon,
+            city: document.getElementById('suggestCity').value,
+            suggester_name: document.getElementById('suggestName2').value,
+            suggester_phone: document.getElementById('suggestPhone').value,
+            notes: document.getElementById('suggestNotes').value
+        };
+
+        try {
+            const r = await fetch('/api/suggest-mosque', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const j = await r.json();
+            if (j.success) {
+                hideModal('suggestModal');
+                alert('✅ ' + j.message);
+            } else {
+                alert('❌ ' + (j.error || 'Gagal mengirim'));
+            }
+        } catch(e) {
+            alert('❌ Gagal mengirim. Cek koneksi internet.');
+        }
+    }
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/static/sw.js').catch(()=>{});
+    </script>
+</body>
+</html>

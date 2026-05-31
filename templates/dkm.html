@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard DKM — SholatKu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#0a0f0d;--card:#111a14;--card-h:#162118;--acc:#2ecc71;--acc-d:rgba(46,204,113,.15);--gold:#f1c40f;--gold-d:rgba(241,196,15,.15);--txt:#e8f5e9;--txt-d:rgba(232,245,233,.5);--bor:rgba(46,204,113,.1);--red:#e74c3c}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+        .container{max-width:600px;margin:0 auto;padding:16px}
+
+        .hdr{background:linear-gradient(135deg,#0d4f2b,#1a7a4a);padding:20px 16px;text-align:center;border-bottom:1px solid var(--bor)}
+        .hdr h1{font-size:22px;margin-bottom:4px}
+        .hdr p{font-size:13px;opacity:.7}
+
+        .tabs{display:flex;gap:4px;margin:16px 0}
+        .tab{flex:1;padding:10px;text-align:center;background:var(--card);border:1px solid var(--bor);border-radius:12px;font-size:13px;cursor:pointer;transition:.2s}
+        .tab.active{background:var(--acc-d);border-color:var(--acc);color:var(--acc)}
+
+        .tc{display:none}.tc.active{display:block}
+
+        .card{background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:16px;margin-bottom:8px}
+        .card-title{font-size:15px;font-weight:600;margin-bottom:4px}
+
+        .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+        .stat{background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:16px;text-align:center}
+        .stat-val{font-size:28px;font-weight:700;color:var(--acc)}
+        .stat-lbl{font-size:11px;color:var(--txt-d);margin-top:4px}
+
+        .frm-g{margin-bottom:12px}
+        .frm-l{font-size:12px;color:var(--txt-d);margin-bottom:4px;display:block}
+        .frm-i{width:100%;padding:10px 14px;background:var(--card);border:1px solid var(--bor);border-radius:10px;color:var(--txt);font-size:14px}
+        .frm-i:focus{outline:none;border-color:var(--acc)}
+        textarea.frm-i{resize:vertical;min-height:60px}
+        select.frm-i{appearance:none}
+
+        .btn{padding:12px;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:.2s}
+        .btn-acc{background:var(--acc);color:#000}
+        .btn-ghost{background:transparent;border:1px solid var(--bor);color:var(--txt);margin-top:8px}
+
+        .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+        .badge-gold{background:var(--gold-d);color:var(--gold)}
+        .badge-acc{background:var(--acc-d);color:var(--acc)}
+
+        .login-box{background:var(--card);border:1px solid var(--bor);border-radius:20px;padding:24px;max-width:400px;margin:40px auto}
+
+        .ev-row{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--bor)}
+        .ev-row:last-child{border:none}
+
+        .don-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bor);font-size:13px}
+        .don-row:last-child{border:none}
+        .don-amt{color:var(--acc);font-weight:600}
+
+        @media(max-width:480px){.stat-grid{grid-template-columns:1fr 1fr}}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="hdr">
+        <h1>🕌 Dashboard DKM</h1>
+        <p>Kelola masjid, kegiatan, dan donasi</p>
+    </div>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection">
+            <div class="login-box">
+                <h2 style="text-align:center;margin-bottom:16px">🔐 Masuk DKM</h2>
+                <div id="loginForm">
+                    <div class="frm-g">
+                        <label class="frm-l">Username</label>
+                        <input type="text" class="frm-i" id="loginUser" placeholder="Username">
+                    </div>
+                    <div class="frm-g">
+                        <label class="frm-l">Password</label>
+                        <input type="password" class="frm-i" id="loginPass" placeholder="Password">
+                    </div>
+                    <button class="btn btn-acc" onclick="dkmLogin()">Masuk</button>
+                    <button class="btn btn-ghost" onclick="showReg()">Belum punya akun? Daftar</button>
+                </div>
+                <div id="regForm" style="display:none">
+                    <div class="frm-g">
+                        <label class="frm-l">Nama Lengkap</label>
+                        <input type="text" class="frm-i" id="regName" placeholder="Nama Anda">
+                    </div>
+                    <div class="frm-g">
+                        <label class="frm-l">Username</label>
+                        <input type="text" class="frm-i" id="regUser" placeholder="Username">
+                    </div>
+                    <div class="frm-g">
+                        <label class="frm-l">Password</label>
+                        <input type="password" class="frm-i" id="regPass" placeholder="Password">
+                    </div>
+                    <div class="frm-g">
+                        <label class="frm-l">No. HP (WhatsApp)</label>
+                        <input type="text" class="frm-i" id="regPhone" placeholder="08xxx">
+                    </div>
+                    <button class="btn btn-acc" onclick="dkmReg()">Daftar</button>
+                    <button class="btn btn-ghost" onclick="showLogin()">Sudah punya akun? Masuk</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashSection" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div>
+                    <h2 style="font-size:18px">Assalamu'alaikum, <span id="dkmName">-</span></h2>
+                    <p style="font-size:13px;color:var(--txt-d)" id="dkmMosque">-</p>
+                </div>
+                <button onclick="dkmLogout()" style="background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px">Keluar</button>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat"><div class="stat-val" id="statEvents">0</div><div class="stat-lbl">Kegiatan</div></div>
+                <div class="stat"><div class="stat-val" id="statReviews">0</div><div class="stat-lbl">Ulasan</div></div>
+                <div class="stat"><div class="stat-val" id="statDonations">Rp 0</div><div class="stat-lbl">Donasi</div></div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" data-tab="tEvents">📅 Kegiatan</div>
+                <div class="tab" data-tab="tAddEvent">➕ Tambah</div>
+                <div class="tab" data-tab="tDonations">💝 Donasi</div>
+                <div class="tab" data-tab="tProfile">🕌 Profil</div>
+            </div>
+
+            <!-- Events List -->
+            <div id="tEvents" class="tc active">
+                <div id="eventsList"><div style="text-align:center;color:var(--txt-d);padding:20px">Memuat...</div></div>
+            </div>
+
+            <!-- Add Event -->
+            <div id="tAddEvent" class="tc">
+                <div class="card">
+                    <h3 style="margin-bottom:12px">➕ Tambah Kegiatan</h3>
+                    <div class="frm-g">
+                        <label class="frm-l">Judul Kegiatan</label>
+                        <input type="text" class="frm-i" id="evTitle" placeholder="Contoh: Kajian Rutin">
+                    </div>
+                    <div class="frm-g">
+                        <label class="frm-l">Jenis</label>
+                        <select class="frm-i" id="evType">
+                            <option value="Pengajian">📖 Pengajian</option>
+                            <option value="Yasinan">📿 Yasinan</option>
+                            <option value="Kultum">🎤 Kultum/Ceramah</option>
+                            <option value="Sosial">🤝 Bakti Sosial</option>
+                            <option value="Event">🎉 Event Khusus</option>
+                            <option value="Lainnya">📌 Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="frm-g">
+                        <label class="frm-l">Deskripsi</label>
+                        <textarea class="frm-i" id="evDesc" placeholder="Detail kegiatan..."></textarea>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                        <div class="frm-g">
+                            <label class="frm-l">Tanggal</label>
+                            <input type="text" class="frm-i" id="evDate" placeholder="Setiap Senin / 17 Juni 2026">
+                        </div>
+                        <div class="frm-g">
+                            <label class="frm-l">Jam</label>
+                            <input type="text" class="frm-i" id="evTime" placeholder="18:00">
+                        </div>
+                    </div>
+                    <div class="frm-g" style="display:flex;align-items:center;gap:8px">
+                        <input type="checkbox" id="evRecur"> <label for="evRecur" style="font-size:13px">Kegiatan rutin (berulang)</label>
+                    </div>
+                    <button class="btn btn-acc" onclick="addEvent()">💾 Simpan Kegiatan</button>
+                </div>
+            </div>
+
+            <!-- Donations -->
+            <div id="tDonations" class="tc">
+                <div class="card">
+                    <h3 style="margin-bottom:12px">💝 Ringkasan Donasi</h3>
+                    <div style="text-align:center;margin-bottom:16px">
+                        <div style="font-size:32px;font-weight:700;color:var(--acc)" id="totalDonations">Rp 0</div>
+                        <div style="font-size:12px;color:var(--txt-d)">Total donasi terkonfirmasi</div>
+                    </div>
+                    <div id="donationsList"><div style="text-align:center;color:var(--txt-d)">Memuat...</div></div>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div id="tProfile" class="tc">
+                <div class="card">
+                    <h3 style="margin-bottom:12px">🕌 Profil Masjid</h3>
+                    <div id="mosqueProfile"><div style="text-align:center;color:var(--txt-d)">Memuat...</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let DKM = { userId: null, mosqueId: null, name: '' };
+
+    // Tab switching
+    document.querySelectorAll('.tabs .tab').forEach(t => t.addEventListener('click', () => {
+        document.querySelectorAll('.tabs .tab').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.tc').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        document.getElementById(t.dataset.tab).classList.add('active');
+    }));
+
+    function showReg() { document.getElementById('loginForm').style.display='none'; document.getElementById('regForm').style.display='block'; }
+    function showLogin() { document.getElementById('loginForm').style.display='block'; document.getElementById('regForm').style.display='none'; }
+
+    async function dkmLogin() {
+        const data = { username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value };
+        try {
+            const r = await fetch('/api/dkm/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            const j = await r.json();
+            if (j.success) {
+                DKM = { userId: j.user_id, mosqueId: j.mosque_id, name: j.name };
+                localStorage.setItem('dkm', JSON.stringify(DKM));
+                showDash();
+            } else alert(j.error);
+        } catch(e) { alert('Gagal login'); }
+    }
+
+    async function dkmReg() {
+        const data = { name: document.getElementById('regName').value, username: document.getElementById('regUser').value, password: document.getElementById('regPass').value, phone: document.getElementById('regPhone').value };
+        try {
+            const r = await fetch('/api/dkm/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            const j = await r.json();
+            if (j.success) { alert('Registrasi berhasil! Silakan masuk.'); showLogin(); }
+            else alert(j.error);
+        } catch(e) { alert('Gagal registrasi'); }
+    }
+
+    function dkmLogout() { localStorage.removeItem('dkm'); DKM={userId:null,mosqueId:null,name:''}; document.getElementById('loginSection').style.display='block'; document.getElementById('dashSection').style.display='none'; }
+
+    async function showDash() {
+        document.getElementById('loginSection').style.display='none';
+        document.getElementById('dashSection').style.display='block';
+        document.getElementById('dkmName').textContent = DKM.name || 'DKM';
+
+        if (DKM.mosqueId) {
+            const r = await fetch(`/api/mosques/${DKM.mosqueId}`);
+            const m = await r.json();
+            document.getElementById('dkmMosque').textContent = m.name;
+            renderMosqueProfile(m);
+
+            // Load events
+            const er = await fetch(`/api/dkm/mosque/${DKM.mosqueId}/events`);
+            const events = await er.json();
+            document.getElementById('statEvents').textContent = events.length;
+            document.getElementById('eventsList').innerHTML = events.length ? events.map(e => `
+                <div class="ev-row">
+                    <div>
+                        <strong>${e.title}</strong><br>
+                        <span style="font-size:12px;color:var(--txt-d)">${e.event_type} · ${e.event_date} ${e.event_time}</span>
+                    </div>
+                    <span class="badge badge-gold">${e.is_recurring?'Rutin':'Sekali'}</span>
+                </div>`).join('') : '<p style="text-align:center;color:var(--txt-d);padding:20px">Belum ada kegiatan</p>';
+
+            // Load donations
+            const dr = await fetch(`/api/dkm/mosque/${DKM.mosqueId}/donations`);
+            const don = await dr.json();
+            document.getElementById('statDonations').textContent = 'Rp ' + don.total.toLocaleString('id');
+            document.getElementById('totalDonations').textContent = 'Rp ' + don.total.toLocaleString('id');
+            document.getElementById('donationsList').innerHTML = don.donations.length ? don.donations.map(d => `
+                <div class="don-row">
+                    <div>
+                        <strong>${d.donor_name}</strong><br>
+                        <span style="font-size:11px;color:var(--txt-d)">${d.created_at} ${d.message?'· '+d.message:''}</span>
+                    </div>
+                    <span class="don-amt">Rp ${d.amount.toLocaleString('id')}</span>
+                </div>`).join('') : '<p style="text-align:center;color:var(--txt-d)">Belum ada donasi</p>';
+        }
+    }
+
+    function renderMosqueProfile(m) {
+        document.getElementById('mosqueProfile').innerHTML = `
+            <div style="display:grid;gap:12px">
+                <div><strong>Nama:</strong> ${m.name}</div>
+                <div><strong>Alamat:</strong> ${m.address||'-'}</div>
+                <div><strong>Imam:</strong> ${m.imam_name||'-'}</div>
+                <div><strong>Kapasitas:</strong> ${m.capacity||'-'} jamaah</div>
+                <div><strong>Fasilitas:</strong> ${m.facilities||'-'}</div>
+                <div><strong>Rating:</strong> ${m.avg_rating}/5 (${m.review_count} ulasan)</div>
+                <div style="margin-top:8px;padding:12px;background:var(--acc-d);border-radius:10px;font-size:13px">
+                    <strong>💡 Tips:</strong> Lengkapi profil masjid Anda agar lebih dikenal jamaah. Tambahkan foto, nomor telepon, dan deskripsi.
+                </div>
+                <a href="/" style="display:block;text-align:center;color:var(--acc);text-decoration:none;font-size:14px;margin-top:8px">← Kembali ke SholatKu</a>
+            </div>`;
+    }
+
+    async function addEvent() {
+        const data = {
+            mosque_id: DKM.mosqueId,
+            title: document.getElementById('evTitle').value,
+            event_type: document.getElementById('evType').value,
+            description: document.getElementById('evDesc').value,
+            event_date: document.getElementById('evDate').value,
+            event_time: document.getElementById('evTime').value,
+            is_recurring: document.getElementById('evRecur').checked ? 1 : 0,
+            recurrence: document.getElementById('evRecur').checked ? 'weekly' : ''
+        };
+        if (!data.title) return alert('Judul harus diisi');
+        try {
+            const r = await fetch('/api/dkm/add-event', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            const j = await r.json();
+            if (j.success) { alert('Kegiatan berhasil ditambahkan! ✅'); showDash(); }
+        } catch(e) { alert('Gagal menyimpan'); }
+    }
+
+    // Init
+    const saved = localStorage.getItem('dkm');
+    if (saved) { DKM = JSON.parse(saved); showDash(); }
+    </script>
+</body>
+</html>
