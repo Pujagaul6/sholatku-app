@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 *.db
 .env
+
+# DB backups for GitHub (tracked)
+!db-backup/
